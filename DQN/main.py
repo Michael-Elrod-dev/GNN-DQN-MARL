@@ -61,6 +61,7 @@ def train(env, agents, network, logger, args):
     dqn_losses = deque(maxlen=100)
     total_scores = deque(maxlen=100)
     steps_per_episode = deque(maxlen=100)
+    seen_percentages = deque(maxlen=100)
     agent_id = [agent.id for agent in agents]
 
     while step_count < args.total_steps:
@@ -81,7 +82,7 @@ def train(env, agents, network, logger, args):
                 actions.append(network.action(obs[i].unsqueeze(0), eps, args.debug))
 
             # Act in the environment
-            next_obs, rewards, dones = env.step(actions, args.render)
+            next_obs, rewards, dones, info = env.step(actions, args.render)
 
             if args.debug:
                 for i in range(batch_size):
@@ -103,6 +104,7 @@ def train(env, agents, network, logger, args):
                 eps = args.eps_end
 
             if any(dones):
+                seen_percentages.append(info["seen_percentage"])
                 break
 
         # Log data
@@ -115,14 +117,17 @@ def train(env, agents, network, logger, args):
                 epsilon=eps,
                 average_rewards=np.mean(total_scores),
                 average_steps_per_episode=np.mean(steps_per_episode),
-                average_loss=np.mean(dqn_losses) if dqn_losses else 0.0
+                average_loss=np.mean(dqn_losses) if dqn_losses else 0.0,
+                goals_collected=info.get("goals_collected", 0),
+                goals_percentage=info.get("goals_percentage", 0),
+                seen_percentage=np.mean(seen_percentages)
             )
             logger.log_agent_metrics(episode_count, scores)
 
         current_progress = round((step_count / args.total_steps) * 100)
-        print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f}', end="")
+        print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f} \tAvg Seen: {np.mean(seen_percentages):.2f}%', end="")
         if current_progress != progress:
-            print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f}')
+            print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f} \tAvg Seen: {np.mean(seen_percentages):.2f}%')
             progress = current_progress
             torch.save(network.qnetwork_local.state_dict(), f'{args.title}.pt')
 

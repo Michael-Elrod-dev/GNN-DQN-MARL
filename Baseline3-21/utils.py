@@ -80,7 +80,7 @@ class Actions(IntEnum):
     up = 2
     down = 3
 
-def print_info(id, obs, action=None, reward=None, next_obs=None, done=None):
+def print_info(id, obs, node_obs, adj, action=None, reward=None, next_obs=None, next_node_obs=None, next_adj=None, done=None):
     print(f'-' * 40)
     if done is not None:
         print(f'Agent: {id} | Action: {action} | Reward: {reward} | Done: {done}')
@@ -88,24 +88,26 @@ def print_info(id, obs, action=None, reward=None, next_obs=None, done=None):
         print(f'Reset:\nAgent: {id}')
     
     print(f'\nObservation: {obs.shape} {type(obs)}')
-    print_observation(obs)
+    print(obs)
 
     if done is not None:
         print(f'\nNext Observation: {next_obs.shape} {type(next_obs)}')
-        print_observation(next_obs)
+        print(next_obs)
 
+    print(f'\nNode Observation: {node_obs.shape} {type(node_obs)}')
+    print(node_obs)
+
+    if done is not None:
+        print(f'\nNext Node Observation: {next_node_obs.shape} {type(next_node_obs)}')
+        print(next_node_obs)
+
+    # print(f'\nAdjacency Matrix: {adj.shape} {type(adj)}')
+    # print(adj)
+
+    # if done is not None:
+    #     print(f'\nNext Adjacency Matrix: {next_adj.shape} {type(next_adj)}')
+    #     print(next_adj)
     print(f'-' * 40)
-
-def print_observation(obs):
-    agent_pos = obs[:2].tolist()
-    print(f"Agent Position: ({agent_pos[0]}, {agent_pos[1]})")
-    
-    for i in range(3):
-        goal_info = obs[2+i*3:2+(i+1)*3].tolist()
-        if goal_info[0] == 0 and goal_info[1] == 0 and goal_info[2] == 0:
-            print(f"Goal {i+1}: Not visible")
-        else:
-            print(f"Goal {i+1}: Position ({goal_info[0]}, {goal_info[1]}), Collected: {bool(goal_info[2])}")
 
 def unbind(agent_id, obs, node_obs, adj, action=None, reward=None, next_obs=None, next_node_obs=None, next_adj=None, dones=None):
     agent_id = torch.unbind(agent_id)

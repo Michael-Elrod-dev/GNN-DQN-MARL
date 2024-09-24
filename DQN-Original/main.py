@@ -5,7 +5,7 @@ import numpy as np
 from args import Args
 from logger import Logger
 from collections import deque
-from network import GR_QNetwork
+from network import Network
 from minigrid.world import Agent
 from minigrid.environment import MultiGridEnv
 from utils import print_info
@@ -23,24 +23,22 @@ def test(env, agents, network, args):
     while episode_count < 100:
         episode_count += 1
         rewards = [0 for _ in range(len(agents))]
-        obs, node_obs, adj = env.reset(args.render)
+        obs = env.reset(args.render)
         
         for step in range(args.episode_steps):
             total_steps += 1
             actions = []
             
             for i in range(len(agents)):
-                action = network.action(obs[i].unsqueeze(0), node_obs[i].unsqueeze(0), adj[i].unsqueeze(0), agents[i].id, 0.0, args.debug)
+                action = network.action(obs[i].unsqueeze(0), 0.0, args.debug)
                 actions.append(action)
             
-            next_obs, next_node_obs, next_adj, step_rewards, dones = env.step(actions, args.render)
+            next_obs, step_rewards, dones = env.step(actions, args.render)
             
             for i in range(len(agents)):
                 rewards[i] += step_rewards[i]
             
             obs = next_obs
-            node_obs = next_node_obs
-            adj = next_adj
             
             if any(dones):
                 break
@@ -63,13 +61,12 @@ def train(env, agents, network, logger, args):
     dqn_losses = deque(maxlen=100)
     total_scores = deque(maxlen=100)
     steps_per_episode = deque(maxlen=100)
-    seen_percentages = deque(maxlen=100)
     agent_id = [agent.id for agent in agents]
 
     while step_count < args.total_steps:
         episode_count += 1
         scores = [0 for _ in range(len(agents))]
-        obs, node_obs, adj = env.reset(args.render)
+        obs = env.reset(args.render)
 
         # Update network bias (PER)
         if step_count % 100 == 0:
@@ -81,25 +78,23 @@ def train(env, agents, network, logger, args):
 
             # Get actions for each agent
             for i in range(batch_size):
-                actions.append(network.action(obs[i].unsqueeze(0), node_obs[i].unsqueeze(0), adj[i].unsqueeze(0), agent_id[i], eps, args.debug))
+                actions.append(network.action(obs[i].unsqueeze(0), eps, args.debug))
 
             # Act in the environment
-            next_obs, next_node_obs, next_adj, rewards, dones, info = env.step(actions, args.render)
+            next_obs, rewards, dones = env.step(actions, args.render)
 
             if args.debug:
                 for i in range(batch_size):
-                    print_info(agent_id[i], obs[i], node_obs[i], adj[i], actions[i], rewards[i], next_obs[i], next_node_obs[i], next_adj[i], dones[i])
+                    print_info(agent_id[i], obs[i], actions[i], rewards[i], next_obs[i], dones[i])
 
             # Send experience to network
             for i in range(batch_size):
-                loss = network.step(agent_id[i], obs[i], node_obs[i], adj[i], actions[i], rewards[i], next_obs[i], next_node_obs[i], next_adj[i], dones[i])
+                loss = network.step(obs[i], actions[i], rewards[i], next_obs[i], dones[i])
                 if loss is not None and step_count > 10000:
                     dqn_losses.append(loss.cpu().item())
                 scores[i] += rewards[i]
 
             obs = next_obs
-            node_obs = next_node_obs
-            adj = next_adj
 
             # Update epsilon
             if eps > args.eps_end:
@@ -108,7 +103,6 @@ def train(env, agents, network, logger, args):
                 eps = args.eps_end
 
             if any(dones):
-                seen_percentages.append(info["seen_percentage"])
                 break
 
         # Log data
@@ -121,17 +115,14 @@ def train(env, agents, network, logger, args):
                 epsilon=eps,
                 average_rewards=np.mean(total_scores),
                 average_steps_per_episode=np.mean(steps_per_episode),
-                average_loss=np.mean(dqn_losses) if dqn_losses else 0.0,
-                goals_collected=info.get("goals_collected", 0),
-                goals_percentage=info.get("goals_percentage", 0),
-                seen_percentage=np.mean(seen_percentages)
+                average_loss=np.mean(dqn_losses) if dqn_losses else 0.0
             )
             logger.log_agent_metrics(episode_count, scores)
 
         current_progress = round((step_count / args.total_steps) * 100)
-        print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f} \tAvg Seen: {np.mean(seen_percentages):.2f}%', end="")
+        print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f}', end="")
         if current_progress != progress:
-            print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f} \tAvg Seen: {np.mean(seen_percentages):.2f}%')
+            print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f}')
             progress = current_progress
             torch.save(network.qnetwork_local.state_dict(), f'{args.title}.pt')
 
@@ -144,7 +135,7 @@ def main():
     args = Args()
     agents = [Agent(id=i, args=args) for i in range(args.num_agents)]
     env = MultiGridEnv(args, agents)
-    network = GR_QNetwork(args)
+    network = Network(args)
     
     if args.logger:
         logger = Logger(args)

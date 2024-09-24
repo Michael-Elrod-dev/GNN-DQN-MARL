@@ -48,17 +48,6 @@ class MultiGridEnv(gym.Env):
         self.highlight = True
         self.tile_size = TILE_PIXELS
         self.window_name = "Custom MiniGrid"
-
-        # Reward values
-        self.reward_goal = args.reward_goal
-        self.penalty_obstacle = args.penalty_obstacle
-        self.penalty_goal = args.penalty_goal
-        self.penalty_invalid_move = args.penalty_invalid_move
-
-        # Calculate the actual number of cells, excluding the outer walls
-        self.total_cells = (self.width - 2) * (self.height - 2)
-        # Initialize seen_cells to only track the inner grid
-        self.seen_cells = np.zeros((self.width - 2, self.height - 2), dtype=bool)
         
     def reset(self, render):
         # To keep the same grid for each episode, call env.seed() with
@@ -71,8 +60,6 @@ class MultiGridEnv(gym.Env):
         
         self.step_count = 0
         self.num_collected = 0
-        self.seen_cells.fill(False)
-
 
         for agent in self.agents:
             agent.reset()
@@ -84,7 +71,7 @@ class MultiGridEnv(gym.Env):
 
         if render: 
             self.render()
-     
+        
         return obs
 
     @abstractmethod
@@ -94,118 +81,71 @@ class MultiGridEnv(gym.Env):
         # Generate the surrounding walls
         self.grid.wall_rect(0, 0, width, height)
 
-        # Place agents based on their number
-        num_agents = len(self.agents)
-
-        if num_agents == 1:
-            # Place the agent at the bottom center
-            x, y = width // 2, height - 2
-            self._place_agent(self.agents[0], x, y)
-
-        elif num_agents == 2:
-            # Place agents at bottom left and right corners
-            self._place_agent(self.agents[0], 1, height - 2)
-            self._place_agent(self.agents[1], width - 2, height - 2)
-
-        elif num_agents == 3:
-            # Place agents at bottom corners and top middle
-            self._place_agent(self.agents[0], 1, height - 2)
-            self._place_agent(self.agents[1], width - 2, height - 2)
-            self._place_agent(self.agents[2], width // 2, 1)
-
-        elif num_agents == 4:
-            # Place agents at all four corners
-            self._place_agent(self.agents[0], 1, 1)
-            self._place_agent(self.agents[1], width - 2, 1)
-            self._place_agent(self.agents[2], 1, height - 2)
-            self._place_agent(self.agents[3], width - 2, height - 2)
-
-        else:
-            # Evenly spread agents around the edges
-            positions = self._get_edge_positions(width, height, num_agents)
-            for agent, pos in zip(self.agents, positions):
-                self._place_agent(agent, pos[0], pos[1])
+        # Place agents at the bottom of the grid with maximum space between them
+        for index, agent in enumerate(self.agents):
+            if len(self.agents) > 1:
+                interval = (width - 3) // (len(self.agents) - 1)
+                x = 1 + interval * index
+            else:
+                x = (width - 1) // 2
+            y = height - 2
+            agent.init_pos = (x, y)
+            agent.cur_pos = (x, y)
+            agent.direction = 3
+            self.grid.set_agent(x, y, agent)
+            self.entities.append(agent)
 
         # Place goals randomly in the grid
         for _ in range(self.num_goals):
-            self._place_object(Goal())
+            obj = Goal()
+            while True:
+                x, y = self._rand_pos(0, width - 1, 0, height - 2)
+                if not self.grid.get(x, y):
+                    self.grid.set(x, y, obj)
+                    obj.cur_pos = (x, y)
+                    self.entities.append(obj)
+                    self.goals.append(obj)
+                    break
 
         # Place obstacles randomly in the grid
         for _ in range(self.num_obstacles):
-            self._place_object(Obstacle())
-
-    def _place_agent(self, agent, x, y):
-        agent.init_pos = (x, y)
-        agent.cur_pos = (x, y)
-        agent.direction = 3  # Assuming 3 is the default direction
-        self.grid.set_agent(x, y, agent)
-        self.entities.append(agent)
-
-    def _place_object(self, obj):
-        while True:
-            x, y = self._rand_pos(1, self.width - 2, 1, self.height - 2)
-            if not self.grid.get(x, y):
-                self.grid.set(x, y, obj)
-                obj.cur_pos = (x, y)
-                if isinstance(obj, Goal):
-                    self.goals.append(obj)
-                elif isinstance(obj, Obstacle):
+            obj = Obstacle()
+            while True:
+                x, y = self._rand_pos(0, width - 1, 0, height - 2)
+                if not self.grid.get(x, y):
+                    self.grid.set(x, y, obj)
+                    obj.cur_pos = (x, y)
                     self.entities.append(obj)
                     self.obstacles.append(obj)
-                break
-
-    def _get_edge_positions(self, width, height, num_agents):
-        positions = []
-        total_edge_length = 2 * (width - 2) + 2 * (height - 2)
-        spacing = total_edge_length / num_agents
-
-        current_pos = 0
-        for i in range(num_agents):
-            edge_pos = int(current_pos)
-            if edge_pos < width - 2:
-                positions.append((edge_pos + 1, 1))  # Top edge
-            elif edge_pos < width + height - 4:
-                positions.append((width - 2, edge_pos - width + 3))  # Right edge
-            elif edge_pos < 2 * width + height - 6:
-                positions.append((2 * width + height - 7 - edge_pos, height - 2))  # Bottom edge
-            else:
-                positions.append((1, total_edge_length - edge_pos))  # Left edge
-
-            current_pos += spacing
-
-        return positions
+                    break
 
     def _get_obs(self, agent):
         obs = []
-        obs.extend(agent.cur_pos)
-
-        # Find goals within the agent's field of view
-        goals_in_fov = []
-        for goal in self.goals:
-            dist = math.sqrt((agent.cur_pos[0] - goal.cur_pos[0])**2 + (agent.cur_pos[1] - goal.cur_pos[1])**2)
-            if dist <= self.max_edge_dist and not goal.collected:
-                goals_in_fov.append((goal, dist))
-
-        # Sort goals by distance and take the 3 closest
-        goals_in_fov.sort(key=lambda x: x[1])
-        goals_in_fov = goals_in_fov[:3]
-
-        # Add goal information to the observation
-        for goal, _ in goals_in_fov:
-            obs.extend(goal.cur_pos)
-            obs.append(int(goal.collected))
-
-        # Pad with dummy values if necessary
-        num_goals = len(goals_in_fov)
-        padding = [0, 0, 0] * (3 - num_goals)
-        obs.extend(padding)
-
-        # Update agent's goals
-        agent.goals = [goal for goal, _ in goals_in_fov]
-
-        # [agent_x, agent_y, goal1_x, goal1_y, goal1_collected, goal2_x, goal2_y, goal2_collected, goal3_x, goal3_y, goal3_collected]
-        agent.obs = torch.tensor(obs)
-        return agent.obs
+        
+        # Calculate the top-left corner of the agent's FOV
+        start_x = agent.cur_pos[0] - (self.agent_view_size // 2)
+        start_y = agent.cur_pos[1] - (self.agent_view_size // 2)
+        
+        # Iterate over each cell in the agent's FOV
+        for dy in range(self.agent_view_size):
+            for dx in range(self.agent_view_size):
+                x = start_x + dx
+                y = start_y + dy
+                
+                # Check if this is a corner cell to be cut off
+                if (dx == 0 and (dy == 0 or dy == 1 or dy == 7 or dy == 8)) or \
+                (dx == 1 and (dy == 0 or dy == 8)) or \
+                (dx == 7 and (dy == 0 or dy == 8)) or \
+                (dx == 8 and (dy == 0 or dy == 1 or dy == 7 or dy == 8)):
+                    continue  # Skip this cell
+                
+                if x < 0 or y < 0 or x >= self.width or y >= self.height:
+                    obs.append(2)  # Append 2 for positions outside the grid
+                else:
+                    cell = (x, y)
+                    obs.append(self.encode(self.grid.get(*cell), agent))
+        
+        return torch.tensor(obs)
 
     def encode(self, cell, agent):
         if cell is None:
@@ -219,15 +159,15 @@ class MultiGridEnv(gym.Env):
         
     def _handle_overlap(self, i, fwd_pos, fwd_cell):
         reward = 0
-        if isinstance(fwd_cell, Goal) and not fwd_cell.collected:
-            reward = self._reward(self.reward_goal)
+        if isinstance(fwd_cell, Goal) and fwd_cell.color == 'green':
+            reward = self._reward(10)
             fwd_cell.color = 'grey'
             fwd_cell.collected = True
             self.num_collected += 1
-        elif isinstance(fwd_cell, Goal) and fwd_cell.collected:
-            reward = self._reward(self.penalty_goal)
+        elif isinstance(fwd_cell, Goal) and fwd_cell.color == 'grey':
+            reward = self._reward(-5)
         elif isinstance(fwd_cell, Obstacle):
-            reward = self._reward(self.penalty_obstacle)
+            reward = self._reward(-5)
         else:
             print(f'fwd_cell = {fwd_cell}')
             raise ValueError("_handle_overlap error.")
@@ -279,39 +219,14 @@ class MultiGridEnv(gym.Env):
                 dones[i] = True
 
         dones = [True if any(dones) else d for d in dones]
-
-        self._update_seen_cells()
-        seen_percentage = self._calculate_seen_percentage()
-
-        if any(dones):
-            info = {
-                "goals_collected": self.num_collected,
-                "goals_percentage": (self.num_collected / self.num_goals) * 100,
-                "seen_percentage": seen_percentage
-            }
-        else:
-            info = {"seen_percentage": seen_percentage}
-
+    
         for agent in self.agents:
             obs.append(self._get_obs(agent))
 
         if render:
             self.render()
         
-        return obs, rewards, dones, info
-
-    def _update_seen_cells(self):
-        for i in range(1, self.width - 1):
-            for j in range(1, self.height - 1):
-                for agent in self.agents:
-                    dist = math.sqrt((i - agent.cur_pos[0])**2 + (j - agent.cur_pos[1])**2)
-                    if dist <= self.max_edge_dist:
-                        # Map the coordinates to the inner grid
-                        self.seen_cells[i-1, j-1] = True
-                        break  # Once a cell is seen by any agent, we can move to the next cell
-                    
-    def _calculate_seen_percentage(self):
-        return np.sum(self.seen_cells) / self.total_cells * 100
+        return obs, rewards, dones
     
     def render(self):
         img = self.get_full_render(self.highlight, self.tile_size)

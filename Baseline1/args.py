@@ -6,8 +6,8 @@ class Args:
     def __init__(self):
         # Env Parameters
         self.env              = None
-        self.num_agents       = 3
-        self.num_goals        = 15
+        self.num_agents       = 4
+        self.num_goals        = 20
         self.num_obstacles    = 5
         self.grid_size        = 21
         self.agent_view_size  = 9
@@ -64,6 +64,12 @@ class Args:
         self.logger       = True     # Log training data to Wandb
         self.render       = False     # Render the environment
         self.debug        = False     # Allow manual action inputs
+
+        # Reward Parameters
+        self.reward_goal = 5
+        self.penalty_goal = -1
+        self.penalty_obstacle = -5
+        self.penalty_invalid_move = -5
 
         # Derived Parameters
         self.title = os.path.basename(os.path.dirname(os.path.abspath(__file__)))

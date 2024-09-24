@@ -6,14 +6,13 @@ class Args:
     def __init__(self):
         # Env Parameters
         self.env              = None
-        self.num_agents       = 7
-        self.num_goals        = 15
+        self.num_agents       = 4
+        self.num_goals        = 20
         self.num_obstacles    = 5
-        self.grid_size        = 21
+        self.grid_size        = 31
         self.agent_view_size  = 9
-        self.max_edge_dist    = 4.5
         self.action_size      = 4
-        self.obs_size         = 11
+        self.obs_size         = ((1 + self.num_goals) * 2) + self.num_goals
 
         # DQN Parameters
         self.prio_e           = 0.1
@@ -38,18 +37,39 @@ class Args:
         self.lr           = 0.0005   # Learning rate 
         self.update_step  = 4        # Update the network
 
+        # GNN Parameters
+        self.gnn_hidden_size      = 16
+        self.gnn_num_heads        = 3
+        self.gnn_concat_heads     = False
+        self.node_obs_shape       = 8
+        self.edge_dim             = 1
+        self.num_embeddings       = 3
+        self.embedding_size       = 12
+        self.gnn_layer_N          = 2
+        self.gnn_use_ReLU         = True
+        self.graph_aggr           = 'node'
+        self.global_aggr_type     = 'mean'
+        self.embed_hidden_size    = 16
+        self.embed_layer_N        = 1
+        self.use_orthogonal       = True
+        self.embed_use_ReLU       = True
+        self.use_feat_norm        = True
+        self.embed_add_self_loop  = False
+        self.full_features        = True
+        self.max_edge_dist        = 4.5
+
         # Run Parameters
         self.device       = 'cuda'
         self.load_policy  = False    # Evaluate a learned policy
-        self.logger       = False     # Log training data to Wandb
-        self.render       = True     # Render the environment
-        self.debug        = True     # Allow manual action inputs
+        self.logger       = True     # Log training data to Wandb
+        self.render       = False     # Render the environment
+        self.debug        = False     # Allow manual action inputs
 
         # Reward Parameters
         self.reward_goal = 5
         self.penalty_goal = -1
-        self.penalty_obstacle = -5
-        self.penalty_invalid_move = -5
+        self.penalty_obstacle = -1
+        self.penalty_invalid_move = -1
 
         # Derived Parameters
         self.title = os.path.basename(os.path.dirname(os.path.abspath(__file__)))

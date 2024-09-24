@@ -4,7 +4,7 @@ import socket
 
 class Logger:
     def __init__(self, args):
-        wandb.init(project='GNN-MARL-Test', entity='elrod-michael95', name=f'{args.title}', mode="online")
+        wandb.init(project='GNN-Test', entity='elrod-michael95', name=f'{args.title}', mode="online")
         
     def log_metrics(self, total_steps, episodes, epsilon, average_rewards, average_steps_per_episode, average_loss):
         wandb.log({
@@ -23,14 +23,17 @@ class Logger:
             log_data[metric_name] = reward
         wandb.log(log_data)
 
-    def log_test_metrics(self, episodes, epsilon, rewards, average_rewards, steps_per_episode, average_steps_per_episode):
+    def log_metrics(self, total_steps, episodes, epsilon, average_rewards, average_steps_per_episode, average_loss, goals_collected, goals_percentage, seen_percentage):
         wandb.log({
-            "Test/Steps per Episode": steps_per_episode,
-            "Test/Average Steps per Episode": average_steps_per_episode,
-            "Test/Episodes": episodes,
-            "Test/Epsilon": epsilon,
-            "Test/Reward": rewards,
-            "Test/Average Reward": average_rewards
+            "Episodes": episodes,
+            "Total Steps": total_steps,
+            "Epsilon": epsilon,
+            "Average Reward": average_rewards,
+            "Average Steps per Episode": average_steps_per_episode,
+            "Average Loss": average_loss,
+            "Goals Collected": goals_collected,
+            "Goals Collected Percentage": goals_percentage,
+            "Grid Seen Percentage": seen_percentage
         })
 
     def check_connection(self):

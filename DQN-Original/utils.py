@@ -88,24 +88,42 @@ def print_info(id, obs, action=None, reward=None, next_obs=None, done=None):
         print(f'Reset:\nAgent: {id}')
     
     print(f'\nObservation: {obs.shape} {type(obs)}')
-    print_observation(obs)
+    print_obs_grid(obs)
 
     if done is not None:
         print(f'\nNext Observation: {next_obs.shape} {type(next_obs)}')
-        print_observation(next_obs)
+        print_obs_grid(next_obs)
 
     print(f'-' * 40)
 
-def print_observation(obs):
-    agent_pos = obs[:2].tolist()
-    print(f"Agent Position: ({agent_pos[0]}, {agent_pos[1]})")
+def print_obs_grid(obs):
+    grid = [
+        [' '] * 9,
+        [' '] * 9,
+        [' '] * 9,
+        [' '] * 9,
+        [' '] * 9,
+        [' '] * 9,
+        [' '] * 9,
+        [' '] * 9,
+        [' '] * 9
+    ]
     
-    for i in range(3):
-        goal_info = obs[2+i*3:2+(i+1)*3].tolist()
-        if goal_info[0] == 0 and goal_info[1] == 0 and goal_info[2] == 0:
-            print(f"Goal {i+1}: Not visible")
-        else:
-            print(f"Goal {i+1}: Position ({goal_info[0]}, {goal_info[1]}), Collected: {bool(goal_info[2])}")
+    idx = 0
+    for dy in range(9):
+        for dx in range(9):
+            # Check if this is a corner cell to be cut off
+            if (dx == 0 and (dy == 0 or dy == 1 or dy == 7 or dy == 8)) or \
+               (dx == 1 and (dy == 0 or dy == 8)) or \
+               (dx == 7 and (dy == 0 or dy == 8)) or \
+               (dx == 8 and (dy == 0 or dy == 1 or dy == 7 or dy == 8)):
+                continue  # Skip this cell
+            
+            grid[dy][dx] = str(obs[idx].item())
+            idx += 1
+    
+    for row in grid:
+        print(' '.join(row))
 
 def unbind(agent_id, obs, node_obs, adj, action=None, reward=None, next_obs=None, next_node_obs=None, next_adj=None, dones=None):
     agent_id = torch.unbind(agent_id)
