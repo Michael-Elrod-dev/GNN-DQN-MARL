@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 import math
+import copy
 import torch
 import pygame
 import numpy as np
@@ -10,7 +11,7 @@ import gymnasium as gym
 from abc import abstractmethod
 from minigrid.grid import Grid
 from typing import Iterable, TypeVar
-from minigrid.world import Goal, Agent, Obstacle, Wall
+from minigrid.world import Goal, Agent, Obstacle
 from utils import Actions, COLOR_NAMES, TILE_PIXELS
 
 
@@ -33,14 +34,15 @@ class MultiGridEnv(gym.Env):
         self.entities = []
         self.step_count = 0
         self.num_collected = 0
+        self.distance_matrix = []
         self.width = args.grid_size
         self.height = args.grid_size
         self.see_through_walls = True
-        self.obs_size = args.obs_size
         self.num_goals = args.num_goals
         self.max_steps = args.episode_steps
         self.num_obstacles = args.num_obstacles
         self.max_edge_dist = args.max_edge_dist
+        # self.full_features = args.full_features
         self.grid = Grid(self.width, self.height)
         self.agent_view_size = args.agent_view_size
         
@@ -49,42 +51,50 @@ class MultiGridEnv(gym.Env):
         self.tile_size = TILE_PIXELS
         self.window_name = "Custom MiniGrid"
 
+        # Dummy Class
+        self.dummy_goal = Goal()
+        self.dummy_goal.cur_pos = (0, 0)
+        self.dummy_goal.collected = False
+
         # Reward values
         self.reward_goal = args.reward_goal
         self.penalty_obstacle = args.penalty_obstacle
         self.penalty_goal = args.penalty_goal
         self.penalty_invalid_move = args.penalty_invalid_move
 
-        # Calculate the actual number of cells, excluding the outer walls
-        self.total_cells = (self.width - 2) * (self.height - 2)
-        # Initialize seen_cells to only track the inner grid
-        self.seen_cells = np.zeros((self.width - 2, self.height - 2), dtype=bool)
+        self.seen_cells = np.zeros((self.width, self.height), dtype=bool)
+        self.total_cells = self.width * self.height - 2 * self.width - 2 * self.height + 4
         
     def reset(self, render):
         # To keep the same grid for each episode, call env.seed() with
         # the same seed before calling env.reset()
         super().reset(seed=int(time.time()))
+        adj = []
         obs = []
+        node_obs = []
         self.goals = []
         self.entities = []
         self.obstacles = []
+        self.dummy_goal = Goal()
+        self.dummy_goal.cur_pos = (0, 0)
+        self.dummy_goal.collected = False
+        self.seen_cells.fill(False)
         
         self.step_count = 0
         self.num_collected = 0
-        self.seen_cells.fill(False)
-
 
         for agent in self.agents:
             agent.reset()
 
         self._gen_grid(self.width, self.height)
+        self.calc_distances(True)
 
         for agent in self.agents:
             obs.append(self._get_obs(agent))
 
         if render: 
             self.render()
-     
+        
         return obs
 
     @abstractmethod
@@ -128,11 +138,15 @@ class MultiGridEnv(gym.Env):
 
         # Place goals randomly in the grid
         for _ in range(self.num_goals):
-            self._place_object(Goal())
+            obj = Goal()
+            self._place_object(obj)
+            self.entities.append(obj)  # Add goal to entities list
 
         # Place obstacles randomly in the grid
         for _ in range(self.num_obstacles):
-            self._place_object(Obstacle())
+            obj = Obstacle()
+            self._place_object(obj)
+            self.entities.append(obj)  # Add obstacle to entities list
 
     def _place_agent(self, agent, x, y):
         agent.init_pos = (x, y)
@@ -174,49 +188,99 @@ class MultiGridEnv(gym.Env):
             current_pos += spacing
 
         return positions
-
+  
     def _get_obs(self, agent):
         obs = []
-        obs.extend(agent.cur_pos)
+        agent_pos = agent.cur_pos
+        obs.extend(agent_pos)
 
-        # Find goals within the agent's field of view
+        agent_id = agent.id
+        num_agents = len(self.agents)
+        num_goals = len(self.goals)
+
+        # Find goals within the agent's FOV and store their relative distances
         goals_in_fov = []
-        for goal in self.goals:
-            dist = math.sqrt((agent.cur_pos[0] - goal.cur_pos[0])**2 + (agent.cur_pos[1] - goal.cur_pos[1])**2)
-            if dist <= self.max_edge_dist and not goal.collected:
-                goals_in_fov.append((goal, dist))
+        for goal_id in range(num_goals):
+            goal = self.goals[goal_id]
+            dist = self.distance_matrix[agent_id, num_agents + goal_id]
+            collected = self.goals[goal_id].collected
 
-        # Sort goals by distance and take the 3 closest
+            if dist <= self.max_edge_dist and not collected:
+                rel_pos = (goal.cur_pos[0] - agent_pos[0], goal.cur_pos[1] - agent_pos[1])
+                goals_in_fov.append((goal, dist, rel_pos))
+
+        # Sort goals by distance in ascending order
         goals_in_fov.sort(key=lambda x: x[1])
         goals_in_fov = goals_in_fov[:3]
+        
+        # Fill the remaining positions with dummy goals if necessary
+        while len(goals_in_fov) < 3:
+            goals_in_fov.append((self.dummy_goal, float('inf'), (0, 0)))
 
-        # Add goal information to the observation
-        for goal, _ in goals_in_fov:
-            obs.extend(goal.cur_pos)
-            obs.append(int(goal.collected))
+        # Check if any of the agent's goals have been collected
+        if agent.goal1 is not None and agent.goal1.collected:
+            agent.goal1 = self.dummy_goal
+        if agent.goal2 is not None and agent.goal2.collected:
+            agent.goal2 = self.dummy_goal
+        if agent.goal3 is not None and agent.goal3.collected:
+            agent.goal3 = self.dummy_goal
 
-        # Pad with dummy values if necessary
-        num_goals = len(goals_in_fov)
-        padding = [0, 0, 0] * (3 - num_goals)
-        obs.extend(padding)
+        # Scenario 1: Start of a new episode (all agent.goal locations are None)
+        if agent.goal1 is None and agent.goal2 is None and agent.goal3 is None:
+            for i, (goal, _, rel_pos) in enumerate(goals_in_fov):
+                setattr(agent, f'goal{i+1}', goal)
+                obs.extend(rel_pos)
 
-        # Update agent's goals
-        agent.goals = [goal for goal, _ in goals_in_fov]
+        # Scenario 2: Step within an epoch (update goal locations based on distances)
+        elif agent.goal1 is not None and agent.goal2 is not None and agent.goal3 is not None:
+            current_goals = [agent.goal1, agent.goal2, agent.goal3]
+            for goal, dist, rel_pos in goals_in_fov:
+                if goal not in current_goals:
+                    if agent.goal1 == self.dummy_goal or dist < self.distance_matrix[agent_id, num_agents + self.goals.index(agent.goal1)]:
+                        agent.goal3 = agent.goal2
+                        agent.goal2 = agent.goal1
+                        agent.goal1 = goal
+                    elif agent.goal2 == self.dummy_goal or dist < self.distance_matrix[agent_id, num_agents + self.goals.index(agent.goal2)]:
+                        agent.goal3 = agent.goal2
+                        agent.goal2 = goal
+                    elif agent.goal3 == self.dummy_goal or dist < self.distance_matrix[agent_id, num_agents + self.goals.index(agent.goal3)]:
+                        agent.goal3 = goal
 
-        # [agent_x, agent_y, goal1_x, goal1_y, goal1_collected, goal2_x, goal2_y, goal2_collected, goal3_x, goal3_y, goal3_collected]
+            # Add relative positions of the updated goals to the observation
+            for goal in [agent.goal1, agent.goal2, agent.goal3]:
+                if goal == self.dummy_goal:
+                    obs.extend([0, 0])
+                else:
+                    rel_pos = (goal.cur_pos[0] - agent_pos[0], goal.cur_pos[1] - agent_pos[1])
+                    obs.extend(rel_pos)
+
+        else:
+            # Fill remaining goal variables with dummy goal objects
+            for i in range(1, 4):
+                if getattr(agent, f'goal{i}') is None:
+                    setattr(agent, f'goal{i}', self.dummy_goal)
+                
+                if getattr(agent, f'goal{i}') == self.dummy_goal:
+                    obs.extend([0, 0])
+                else:
+                    goal = getattr(agent, f'goal{i}')
+                    rel_pos = (goal.cur_pos[0] - agent_pos[0], goal.cur_pos[1] - agent_pos[1])
+                    obs.extend(rel_pos)
+
         agent.obs = torch.tensor(obs)
         return agent.obs
 
-    def encode(self, cell, agent):
-        if cell is None:
-            return 0
-        elif isinstance(cell, Goal) and cell.color == 'green':
-            return 1
-        elif isinstance(cell, Obstacle) or isinstance(cell, Wall) or (isinstance(cell, Agent) and cell != agent) or cell.color == 'grey':
-            return 2
-        else:
-            raise ValueError("Encode error.")
-        
+    def _update_seen_cells(self):
+        for agent in self.agents:
+            x, y = agent.cur_pos
+            view_size = agent.view_size
+            for i in range(max(1, x - view_size // 2), min(self.width - 1, x + view_size // 2 + 1)):
+                for j in range(max(1, y - view_size // 2), min(self.height - 1, y + view_size // 2 + 1)):
+                    self.seen_cells[i, j] = True
+
+    def _calculate_seen_percentage(self):
+        return np.sum(self.seen_cells) / self.total_cells * 100
+    
     def _handle_overlap(self, i, fwd_pos, fwd_cell):
         reward = 0
         if isinstance(fwd_cell, Goal) and not fwd_cell.collected:
@@ -268,16 +332,19 @@ class MultiGridEnv(gym.Env):
                 self.grid.set_agent(*new_pos, self.agents[i])
                 self.grid.set_agent(*self.agents[i].cur_pos, None)
                 self.agents[i].cur_pos = new_pos
+
             # If move is valid but involves an overlap
             elif cell and cell.can_overlap():
                 rewards[i] = self._handle_overlap(i, new_pos, cell)
+
             # If move is not valid
             else:
-                rewards[i] = self._reward(-5)
+                rewards[i] = self._reward(self.penalty_invalid_move)
 
             if self.step_count >= self.max_steps or self.num_collected >= self.num_goals:
                 dones[i] = True
 
+        self.calc_distances(False)
         dones = [True if any(dones) else d for d in dones]
 
         self._update_seen_cells()
@@ -290,8 +357,8 @@ class MultiGridEnv(gym.Env):
                 "seen_percentage": seen_percentage
             }
         else:
-            info = {"seen_percentage": seen_percentage}
-
+            info = {}
+    
         for agent in self.agents:
             obs.append(self._get_obs(agent))
 
@@ -299,19 +366,37 @@ class MultiGridEnv(gym.Env):
             self.render()
         
         return obs, rewards, dones, info
-
-    def _update_seen_cells(self):
-        for i in range(1, self.width - 1):
-            for j in range(1, self.height - 1):
-                for agent in self.agents:
-                    dist = math.sqrt((i - agent.cur_pos[0])**2 + (j - agent.cur_pos[1])**2)
-                    if dist <= self.max_edge_dist:
-                        # Map the coordinates to the inner grid
-                        self.seen_cells[i-1, j-1] = True
-                        break  # Once a cell is seen by any agent, we can move to the next cell
-                    
-    def _calculate_seen_percentage(self):
-        return np.sum(self.seen_cells) / self.total_cells * 100
+    
+    def calc_distances(self, reset=False):
+        num_entities = len(self.entities)
+        num_agents = len(self.agents)
+        
+        if reset:
+            # Calculate distances between all entities
+            distance_matrix = torch.zeros((num_entities, num_entities))
+            for i in range(num_entities):
+                for j in range(i + 1, num_entities):
+                    entity1 = self.entities[i]
+                    entity2 = self.entities[j]
+                    x1, y1 = entity1.cur_pos
+                    x2, y2 = entity2.cur_pos
+                    distance = np.sqrt((x1 - x2)**2 + (y1 - y2)**2)
+                    distance_matrix[i, j] = distance
+                    distance_matrix[j, i] = distance
+        else:
+            # Update distances only between agents and other entities
+            distance_matrix = self.distance_matrix.clone()
+            for i in range(num_agents):
+                for j in range(num_agents, num_entities):
+                    agent = self.agents[i]
+                    entity = self.entities[j]
+                    x1, y1 = agent.cur_pos
+                    x2, y2 = entity.cur_pos
+                    distance = np.sqrt((x1 - x2)**2 + (y1 - y2)**2)
+                    distance_matrix[i, j] = distance
+                    distance_matrix[j, i] = distance
+        
+        self.distance_matrix = distance_matrix
     
     def render(self):
         img = self.get_full_render(self.highlight, self.tile_size)
@@ -335,8 +420,33 @@ class MultiGridEnv(gym.Env):
         bg.fill((255, 255, 255))
         bg.blit(surf, (offset / 2, 0))
         bg = pygame.transform.smoothscale(bg, (self.screen_size, self.screen_size))
+        line_surface = pygame.Surface((self.screen_size, self.screen_size), pygame.SRCALPHA)
+
+        # Draw lines between agents without considering distance
+        for i in range(len(self.agents)):
+            for j in range(i + 1, len(self.agents)):
+                agent1 = self.agents[i]
+                agent2 = self.agents[j]
+                pos1 = (((agent1.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+                        ((agent1.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+                pos2 = (((agent2.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+                        ((agent2.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+                pygame.draw.line(line_surface, (255, 0, 0), pos1, pos2, 2)
+
+        # Draw lines between agents and non-agent entities within the specified distance
+        for agent in self.agents:
+            for entity in self.entities:
+                if entity not in self.agents:
+                    dist = math.sqrt((agent.cur_pos[0] - entity.cur_pos[0])**2 + (agent.cur_pos[1] - entity.cur_pos[1])**2)
+                    if dist <= self.max_edge_dist:
+                        pos1 = (((agent.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+                                ((agent.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+                        pos2 = (((entity.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+                                ((entity.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+                        pygame.draw.line(line_surface, (255, 0, 0), pos1, pos2, 2)
 
         # Blit the line surface onto the background
+        bg.blit(line_surface, (0, 0))
         self.window.blit(bg, (0, 0))
         pygame.event.pump()
         pygame.display.flip()

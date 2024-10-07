@@ -6,14 +6,14 @@ class Args:
     def __init__(self):
         # Env Parameters
         self.env              = None
-        self.num_agents       = 7
-        self.num_goals        = 15
-        self.num_obstacles    = 5
+        self.num_agents       = 1
+        self.num_goals        = 20
+        self.num_obstacles    = 0
         self.grid_size        = 21
         self.agent_view_size  = 9
-        self.max_edge_dist    = 4.5
         self.action_size      = 4
-        self.obs_size         = 11
+        self.max_edge_dist    = 4.5
+        self.obs_size         = 8
 
         # DQN Parameters
         self.prio_e           = 0.1
@@ -23,11 +23,11 @@ class Args:
         self.priority_replay  = True
 
         # Training parameters
-        self.total_steps      = 2000000
-        self.episode_steps    = 100
+        self.total_steps      = 2500000
+        self.episode_steps    = 150
         self.eps_start        = 1.0
         self.eps_end          = 0.01
-        self.eps_percentage   = 0.70
+        self.eps_percentage   = 0.80
         self.seed             = int(time.time())
 
         # Network Parameters
@@ -46,10 +46,10 @@ class Args:
         self.debug        = True     # Allow manual action inputs
 
         # Reward Parameters
-        self.reward_goal = 5
-        self.penalty_goal = -1
-        self.penalty_obstacle = -5
-        self.penalty_invalid_move = -5
+        self.reward_goal          = 5
+        self.penalty_goal         = 0
+        self.penalty_obstacle     = -1
+        self.penalty_invalid_move = -1
 
         # Derived Parameters
         self.title = os.path.basename(os.path.dirname(os.path.abspath(__file__)))

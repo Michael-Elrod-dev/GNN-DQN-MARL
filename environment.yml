@@ -70,3 +70,10 @@ dependencies:
       - wandb==0.18.1
       - yarl==1.9.4
 prefix: C:\Users\elrod\anaconda3\envs\GNN
+
+pip install pygame wandb gymnasium==0.29.1 torch-geometric==2.5.3
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+salloc --time=02:00:00 --cpus-per-task=4 --mem=16GB --gpus=v100:1
+
+api key: cc0496ce907e3e260cdea0f04bef954e02bb5945

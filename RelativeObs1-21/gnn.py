@@ -82,7 +82,8 @@ class TransformerConvNet(nn.Module):
         data = next(iter(loader_data))
         x, edge_index, edge_attr = data.x, data.edge_index, data.edge_attr
         batch = data.batch
-
+        print(f'x:\n {x}\nedge_index:\n {edge_index}\nedge_attr: \n{edge_attr}')
+        
         if self.edge_dim is None:
             edge_attr = None
 

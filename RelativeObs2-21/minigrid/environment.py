@@ -198,7 +198,7 @@ class MultiGridEnv(gym.Env):
         agent_pos = agent.cur_pos
 
         # Add relative position (0, 0) for the agent itself
-        obs.extend([0, 0])
+        obs.extend(agent_pos)
 
         agent_id = agent.id
         num_agents = len(self.agents)

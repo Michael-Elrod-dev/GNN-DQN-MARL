@@ -97,15 +97,8 @@ def print_info(id, obs, action=None, reward=None, next_obs=None, done=None):
     print(f'-' * 40)
 
 def print_observation(obs):
-    agent_pos = obs[:2].tolist()
-    print(f"Agent Position: ({agent_pos[0]}, {agent_pos[1]})")
-    
-    for i in range(3):
-        goal_info = obs[2+i*3:2+(i+1)*3].tolist()
-        if goal_info[0] == 0 and goal_info[1] == 0 and goal_info[2] == 0:
-            print(f"Goal {i+1}: Not visible")
-        else:
-            print(f"Goal {i+1}: Position ({goal_info[0]}, {goal_info[1]}), Collected: {bool(goal_info[2])}")
+    print(obs)
+
 
 def unbind(agent_id, obs, node_obs, adj, action=None, reward=None, next_obs=None, next_node_obs=None, next_adj=None, dones=None):
     agent_id = torch.unbind(agent_id)

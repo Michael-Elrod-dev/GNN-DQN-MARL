@@ -22,8 +22,8 @@ class Args:
         self.priority_replay  = True
 
         # Training parameters
-        self.total_steps      = 2000000
-        self.episode_steps    = 100
+        self.total_steps      = 2500000
+        self.episode_steps    = 150
         self.eps_start        = 1.0
         self.eps_end          = 0.01
         self.eps_percentage   = 0.70
