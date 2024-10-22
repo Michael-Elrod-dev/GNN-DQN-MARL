@@ -63,7 +63,7 @@ class Args:
         self.load_policy  = False    # Evaluate a learned policy
         self.logger       = False     # Log training data to Wandb
         self.render       = True     # Render the environment
-        self.debug        = True     # Allow manual action inputs
+        self.debug        = False     # Allow manual action inputs
 
         # Reward Parameters
         self.reward_goal = 5
