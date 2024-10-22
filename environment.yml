@@ -71,9 +71,56 @@ dependencies:
       - yarl==1.9.4
 prefix: C:\Users\elrod\anaconda3\envs\GNN
 
+
+ssh mselrod@slogin.palmetto.clemson.edu
+
 pip install pygame wandb gymnasium==0.29.1 torch-geometric==2.5.3
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 salloc --time=02:00:00 --cpus-per-task=4 --mem=16GB --gpus=v100:1
 
 api key: cc0496ce907e3e260cdea0f04bef954e02bb5945
+
+```
+I'm working on a multi-agent reinforcement learning project using PyTorch and Graph Neural Networks (GNNs). The project involves multiple agents navigating a grid-world environment to collect goals. Here's a summary of the key components:
+
+Environment (environment.py):
+
+Custom grid-world environment with multiple agents, goals, and obstacles
+Supports dynamic graph generation based on agent positions
+Returns observations, node features, and adjacency matrices for each agent
+
+
+GNN Model (gnn.py):
+
+Uses TransformerConv layers from PyTorch Geometric
+Processes node features and adjacency matrices to output action values
+
+
+Network Interface (network.py):
+
+GR_QNetwork class that interfaces with the GNN model
+Handles action selection, experience storage, and network updates
+Uses a prioritized experience replay buffer
+
+
+Main Training Loop (main.py):
+
+Manages the training process, including environment resets and step iterations
+Currently processes agents sequentially for action selection and environment steps
+
+
+Configuration (args.py):
+
+Stores all hyperparameters and configuration options
+
+
+
+The current challenge is to optimize the training process, specifically by batching the forward passes for all agents to better utilize GPU resources. We're working with a single GPU (NVIDIA V100) and want to improve training speed without introducing multi-GPU complexity.
+The main areas we're looking to optimize are:
+
+Batching agent observations and processing them through the network simultaneously
+Modifying the environment to return batched observations
+Updating the network interface to handle batched inputs and outputs
+Adjusting the main training loop to work with batched agent data
+```

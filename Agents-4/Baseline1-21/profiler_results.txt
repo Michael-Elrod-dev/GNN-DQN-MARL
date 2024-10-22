@@ -1,0 +1,608 @@
+         20948676 function calls (19986510 primitive calls) in 125.411 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.176    0.176  125.425  125.425 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\main.py:62(train)
+142720/3568    0.290    0.000   92.981    0.026 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:1528(_wrapped_call_impl)
+142720/3568    1.006    0.000   92.971    0.026 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:1534(_call_impl)
+     3568    0.135    0.000   92.934    0.026 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\gnn.py:173(forward)
+     3568    2.529    0.001   91.231    0.026 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\gnn.py:71(forward)
+     2400    0.043    0.000   90.834    0.038 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:42(step)
+      584    0.229    0.000   87.167    0.149 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:88(learn)
+    77152   14.575    0.000   35.701    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\gnn.py:114(processAdj)
+     2400    0.095    0.000   29.497    0.012 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:55(action)
+    10704    0.868    0.000   19.142    0.002 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\conv\transformer_conv.py:194(forward)
+7136/3568    0.009    0.000   17.801    0.005 {built-in method builtins.next}
+     3568    0.044    0.000   17.795    0.005 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:626(__next__)
+     3568    0.011    0.000   17.489    0.005 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:673(_next_data)
+     3568    0.016    0.000   17.435    0.005 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\_utils\fetch.py:46(fetch)
+     3568    0.013    0.000   17.403    0.005 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\loader\dataloader.py:24(__call__)
+     3568    0.025    0.000   17.389    0.005 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\batch.py:82(from_data_list)
+     3568    0.438    0.000   17.312    0.005 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:37(collate)
+    77152   15.443    0.000   15.443    0.000 {method 'nonzero' of 'torch._C.TensorBase' objects}
+      584    0.006    0.000   13.540    0.023 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_tensor.py:466(backward)
+      584    0.007    0.000   13.533    0.023 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\__init__.py:165(backward)
+      584    0.007    0.000   13.488    0.023 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\graph.py:739(_engine_run_backward)
+      584   13.480    0.023   13.480    0.023 {method 'run_backward' of 'torch._C._EngineBase' objects}
+    10704    0.366    0.000   12.913    0.001 C:\Users\elrod\AppData\Local\Temp\torch_geometric.nn.conv.transformer_conv_TransformerConv_propagate_yn2z6c5l.py:150(propagate)
+    10704    0.340    0.000   11.162    0.001 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:149(_collate)
+    10704    2.242    0.000    8.874    0.001 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\conv\transformer_conv.py:258(message)
+    17840    0.074    0.000    7.735    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\experimental.py:114(wrapper)
+     1168    2.613    0.002    6.638    0.006 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:171(<listcomp>)
+    67792    6.049    0.000    6.049    0.000 {built-in method torch._C._nn.linear}
+     3568    3.363    0.001    5.701    0.002 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\utils\_to_dense_batch.py:13(to_dense_batch)
+    91360    5.364    0.000    5.364    0.000 {method 'to' of 'torch._C.TensorBase' objects}
+    53520    0.191    0.000    4.842    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\dense\linear.py:141(forward)
+    10704    1.329    0.000    4.793    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\utils\_softmax.py:12(softmax)
+      600    0.060    0.000    4.548    0.008 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:337(step)
+    39248    0.414    0.000    4.262    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\utils\_scatter.py:15(scatter)
+    80720    0.530    0.000    4.252    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:516(__init__)
+     3568    0.020    0.000    3.973    0.001 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\gnn.py:38(forward)
+     3568    0.128    0.000    3.953    0.001 C:\Users\elrod\AppData\Local\Temp\gnn_EmbedConv_propagate_xg0j2fax.py:111(propagate)
+      584    2.657    0.005    3.843    0.007 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:122(soft_update)
+      584    0.082    0.000    3.449    0.006 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:154(sample)
+    82992    3.340    0.000    3.340    0.000 {built-in method torch.stack}
+     3568    0.172    0.000    2.754    0.001 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\gnn.py:42(message)
+    99336    2.653    0.000    2.653    0.000 {method 'float' of 'torch._C.TensorBase' objects}
+      604    2.580    0.004    2.593    0.004 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:409(calc_distances)
+   410736    0.632    0.000    2.584    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:100(__setattr__)
+   242160    0.304    0.000    2.507    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:561(__setattr__)
+     3568    0.016    0.000    2.415    0.001 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:311(repeat_interleave)
+    10704    0.153    0.000    2.224    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:319(get_incs)
+     3568    0.123    0.000    2.215    0.001 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:315(<listcomp>)
+    77152    2.092    0.000    2.092    0.000 {built-in method torch.full}
+211200/4800    0.490    0.000    2.086    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:2411(train)
+    14272    0.090    0.000    2.084    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\conv\message_passing.py:608(aggregate)
+    57088    2.067    0.000    2.067    0.000 {method 'index_select' of 'torch._C.TensorBase' objects}
+     7136    0.088    0.000    1.925    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\container.py:215(forward)
+    28544    0.304    0.000    1.853    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\utils\functions.py:5(cumsum)
+   154304    0.541    0.000    1.797    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:418(num_nodes)
+    10704    0.336    0.000    1.795    0.000 C:\Users\elrod\AppData\Local\Temp\torch_geometric.nn.conv.transformer_conv_TransformerConv_propagate_yn2z6c5l.py:36(collect)
+    14272    0.067    0.000    1.791    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\aggr\base.py:98(__call__)
+   249296    0.261    0.000    1.686    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:120(__setitem__)
+  1262790    0.990    0.000    1.635    0.000 {built-in method builtins.getattr}
+    41200    1.600    0.000    1.600    0.000 {built-in method torch.tensor}
+    14272    0.021    0.000    1.599    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\aggr\basic.py:19(forward)
+    14272    0.041    0.000    1.578    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\aggr\base.py:170(reduce)
+    35680    0.079    0.000    1.562    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\conv\message_passing.py:309(_index_select)
+    14272    0.058    0.000    1.540    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\linear.py:115(forward)
+    10704    0.154    0.000    1.471    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:321(<listcomp>)
+   249296    0.229    0.000    1.425    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:82(_pop_cache)
+    39248    1.422    0.000    1.422    0.000 {method 'new_zeros' of 'torch._C.TensorBase' objects}
+     2416    1.318    0.001    1.399    0.001 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:196(_get_obs)
+    35680    0.039    0.000    1.397    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\conv\message_passing.py:315(_index_select_safe)
+   231456    0.099    0.000    1.318    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:654(__inc__)
+    77152    0.058    0.000    1.219    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:612(num_nodes)
+   232608    0.594    0.000    1.203    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:1711(__setattr__)
+    21408    1.192    0.000    1.192    0.000 {built-in method torch.cat}
+    77152    0.115    0.000    1.160    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:167(num_nodes)
+     2400    0.003    0.000    1.016    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:2433(eval)
+    77152    0.060    0.000    1.010    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:185(<listcomp>)
+    28544    0.998    0.000    0.998    0.000 {method 'scatter_add_' of 'torch._C.TensorBase' objects}
+      584    0.021    0.000    0.993    0.002 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:374(wrapper)
+   101072    0.960    0.000    0.960    0.000 {method 'view' of 'torch._C.TensorBase' objects}
+      584    0.891    0.002    0.946    0.002 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:150(update_priority)
+    80720    0.348    0.000    0.934    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:66(__init__)
+      584    0.012    0.000    0.923    0.002 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:58(_use_grad)
+      584    0.008    0.000    0.904    0.002 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\adam.py:135(step)
+    77152    0.053    0.000    0.901    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:952(x)
+    21408    0.036    0.000    0.894    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\activation.py:102(forward)
+     3568    0.044    0.000    0.891    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:142(<listcomp>)
+    21408    0.039    0.000    0.858    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\functional.py:1489(relu)
+      584    0.820    0.001    0.820    0.001 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:158(<listcomp>)
+    21408    0.810    0.000    0.810    0.000 {built-in method torch.relu}
+      584    0.793    0.001    0.793    0.001 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:170(<listcomp>)
+1997159/1764476    0.446    0.000    0.777    0.000 {built-in method builtins.isinstance}
+      584    0.030    0.000    0.732    0.001 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\adam.py:260(adam)
+    39248    0.137    0.000    0.730    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\utils\_scatter.py:177(broadcast)
+     3568    0.089    0.000    0.679    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\batch.py:20(__call__)
+   249296    0.533    0.000    0.645    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:89(__getattr__)
+      584    0.020    0.000    0.643    0.001 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\adam.py:450(_multi_tensor_adam)
+    24528    0.618    0.000    0.618    0.000 {method 'copy_' of 'torch._C.TensorBase' objects}
+     2673    0.614    0.000    0.614    0.000 {method 'cpu' of 'torch._C.TensorBase' objects}
+   417600    0.223    0.000    0.611    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:2313(children)
+    10704    0.604    0.000    0.604    0.000 {method 'scatter_reduce_' of 'torch._C.TensorBase' objects}
+    77152    0.046    0.000    0.600    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:960(edge_index)
+    77152    0.045    0.000    0.584    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:976(edge_attr)
+    50224    0.032    0.000    0.568    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:2207(parameters)
+    28544    0.559    0.000    0.559    0.000 {built-in method torch.cumsum}
+   800748    0.541    0.000    0.541    0.000 {method 'size' of 'torch._C.TensorBase' objects}
+    88504    0.539    0.000    0.539    0.000 {method 'unsqueeze' of 'torch._C.TensorBase' objects}
+     3568    0.538    0.000    0.538    0.000 {built-in method torch.as_tensor}
+    50224    0.024    0.000    0.535    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:2232(named_parameters)
+    50224    0.160    0.000    0.511    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:2193(_named_members)
+     7136    0.045    0.000    0.504    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\normalization.py:200(forward)
+    11288    0.496    0.000    0.496    0.000 {method 'mean' of 'torch._C.TensorBase' objects}
+   204256    0.154    0.000    0.490    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\utils\sparse.py:132(is_sparse)
+     2416    0.274    0.000    0.479    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:278(_get_node_features)
+    57088    0.471    0.000    0.471    0.000 {method 'narrow' of 'torch._C.TensorBase' objects}
+    11288    0.458    0.000    0.458    0.000 {method 'sum' of 'torch._C.TensorBase' objects}
+   165008    0.106    0.000    0.454    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:646(__cat_dim__)
+    77152    0.045    0.000    0.450    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:567(edge_index)
+     7136    0.034    0.000    0.446    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\functional.py:2558(layer_norm)
+     2920    0.015    0.000    0.416    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_tensor.py:1037(__iter__)
+     3568    0.009    0.000    0.415    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:3261(signature)
+     3568    0.008    0.000    0.406    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:3007(from_callable)
+     7136    0.399    0.000    0.399    0.000 {built-in method torch.layer_norm}
+     3568    0.050    0.000    0.398    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:2435(_signature_from_callable)
+   417600    0.325    0.000    0.387    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:2322(named_children)
+     2920    0.386    0.000    0.386    0.000 {method 'unbind' of 'torch._C.TensorBase' objects}
+   308608    0.140    0.000    0.372    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\view.py:37(__iter__)
+     3568    0.101    0.000    0.371    0.000 C:\Users\elrod\AppData\Local\Temp\gnn_EmbedConv_propagate_xg0j2fax.py:33(collect)
+   232683    0.246    0.000    0.338    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\parameter.py:8(__instancecheck__)
+     3568    0.112    0.000    0.325    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:2331(_signature_from_function)
+      584    0.325    0.001    0.325    0.001 {built-in method torch.multinomial}
+   296429    0.321    0.000    0.321    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:1696(__getattr__)
+     7720    0.319    0.000    0.319    0.000 {method 'max' of 'torch._C.TensorBase' objects}
+   218528    0.293    0.000    0.315    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\utils\sparse.py:114(is_torch_sparse_tensor)
+    10704    0.312    0.000    0.312    0.000 {method 'exp' of 'torch._C.TensorBase' objects}
+   145640    0.303    0.000    0.303    0.000 {built-in method torch._C._get_tracing_state}
+   121312    0.128    0.000    0.298    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\_compile.py:9(is_compiling)
+      584    0.006    0.000    0.281    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_compile.py:20(inner)
+     3568    0.034    0.000    0.273    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\loader\dataloader.py:71(__init__)
+20760/17192    0.014    0.000    0.270    0.000 {built-in method builtins.iter}
+    94345    0.057    0.000    0.269    0.000 {built-in method builtins.setattr}
+    80720    0.107    0.000    0.268    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\feature_store.py:276(__init__)
+     3568    0.004    0.000    0.260    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:426(__iter__)
+     3568    0.009    0.000    0.256    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:382(_get_iterator)
+   161440    0.206    0.000    0.251    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\view.py:9(_keys)
+256960/50808    0.231    0.000    0.248    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:2369(named_modules)
+     3568    0.017    0.000    0.247    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:659(__init__)
+    28544    0.245    0.000    0.245    0.000 {method 'zero_' of 'torch._C.TensorBase' objects}
+   663600    0.242    0.000    0.242    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:117(__getitem__)
+    39248    0.232    0.000    0.232    0.000 {method 'expand_as' of 'torch._C.TensorBase' objects}
+     3568    0.065    0.000    0.224    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:226(__init__)
+   161440    0.211    0.000    0.211    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\graph_store.py:109(__init__)
+    21408    0.084    0.000    0.206    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\experimental.py:26(is_experimental_mode_enabled)
+    14272    0.075    0.000    0.205    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\conv\message_passing.py:254(_check_input)
+     3568    0.019    0.000    0.205    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\sparse.py:162(forward)
+     3568    0.058    0.000    0.202    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:565(__init__)
+   168576    0.143    0.000    0.199    0.000 <frozen _collections_abc>:778(__contains__)
+    28544    0.194    0.000    0.194    0.000 {method 'new_empty' of 'torch._C.TensorBase' objects}
+     4736    0.023    0.000    0.190    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\profiler.py:604(__enter__)
+     3568    0.009    0.000    0.182    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\functional.py:2154(embedding)
+     3568    0.181    0.000    0.181    0.000 {method 'repeat' of 'torch._C.TensorBase' objects}
+   154304    0.127    0.000    0.174    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:185(items)
+     3568    0.171    0.000    0.171    0.000 {built-in method torch.embedding}
+   121312    0.087    0.000    0.170    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\external_utils.py:14(is_compiling)
+      584    0.004    0.000    0.167    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\decorators.py:36(disable)
+     4736    0.009    0.000    0.166    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_ops.py:846(__call__)
+     2920    0.009    0.000    0.166    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_tensor.py:34(wrapped)
+    10704    0.092    0.000    0.158    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\functional.py:1279(dropout)
+    10704    0.065    0.000    0.157    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:166(<listcomp>)
+     4736    0.157    0.000    0.157    0.000 {built-in method torch._ops.profiler._record_function_enter_new}
+     3568    0.071    0.000    0.154    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\gnn.py:127(gatherNodeFeats)
+     3568    0.152    0.000    0.152    0.000 {method 'long' of 'torch._C.TensorBase' objects}
+      584    0.015    0.000    0.152    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:351(__call__)
+454334/428758    0.126    0.000    0.143    0.000 {built-in method builtins.len}
+     3568    0.141    0.000    0.141    0.000 {built-in method torch.arange}
+    10704    0.069    0.000    0.139    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\collate.py:95(<listcomp>)
+      584    0.098    0.000    0.138    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\adam.py:82(_init_group)
+     3572    0.137    0.000    0.137    0.000 {built-in method torch.zeros}
+    46720    0.048    0.000    0.134    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:84(_get_value)
+     3568    0.133    0.000    0.133    0.000 {method 'new_ones' of 'torch._C.TensorBase' objects}
+    28544    0.079    0.000    0.129    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:2669(__init__)
+     4736    0.046    0.000    0.123    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\profiler.py:610(__exit__)
+   170952    0.093    0.000    0.113    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\compiler\__init__.py:157(is_compiling)
+   731700    0.113    0.000    0.113    0.000 {method 'get' of 'dict' objects}
+    35680    0.042    0.000    0.113    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\jit\_trace.py:1133(is_tracing)
+      584    0.004    0.000    0.109    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:428(_fn)
+   342760    0.106    0.000    0.106    0.000 {method 'dim' of 'torch._C.TensorBase' objects}
+    10704    0.032    0.000    0.105    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\container.py:290(__getitem__)
+    39248    0.057    0.000    0.102    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\conv\message_passing.py:295(_set_size)
+        4    0.000    0.000    0.100    0.025 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:68(reset)
+      584    0.100    0.000    0.100    0.000 {built-in method torch._foreach_sqrt}
+      584    0.061    0.000    0.100    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:793(zero_grad)
+     3568    0.088    0.000    0.091    0.000 {built-in method builtins.__build_class__}
+      584    0.006    0.000    0.089    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:932(getsourcefile)
+      584    0.016    0.000    0.087    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\adam.py:567(<listcomp>)
+     1752    0.086    0.000    0.086    0.000 {method 'pow' of 'torch._C.TensorBase' objects}
+     2416    0.082    0.000    0.082    0.000 {built-in method numpy.array}
+   304512    0.064    0.000    0.082    0.000 {method 'add' of 'set' objects}
+   727180    0.078    0.000    0.078    0.000 {method 'append' of 'list' objects}
+      584    0.013    0.000    0.076    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\adam.py:568(<listcomp>)
+     4736    0.008    0.000    0.075    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_ops.py:591(__call__)
+    10704    0.039    0.000    0.069    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\container.py:281(_get_abs_string_index)
+      584    0.001    0.000    0.068    0.000 <frozen genericpath>:16(exists)
+     4736    0.067    0.000    0.067    0.000 {built-in method torch._ops.profiler.}
+      584    0.066    0.000    0.066    0.000 {built-in method nt.stat}
+    35680    0.066    0.000    0.066    0.000 {built-in method torch._C._is_tracing}
+78496/74928    0.061    0.000    0.065    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:417(__setattr__)
+     1168    0.063    0.000    0.063    0.000 {built-in method torch._foreach_add_}
+      600    0.053    0.000    0.063    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:306(_update_seen_cells)
+      584    0.001    0.000    0.062    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:402(_group_tensors_by_device_and_dtype)
+      584    0.003    0.000    0.060    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\_contextlib.py:112(decorate_context)
+   121512    0.039    0.000    0.060    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_tensor.py:1059(__hash__)
+    11508    0.059    0.000    0.059    0.000 {method 'detach' of 'torch._C.TensorBase' objects}
+    14272    0.037    0.000    0.058    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\batch.py:173(__getitem__)
+    22576    0.015    0.000    0.058    0.000 {built-in method builtins.all}
+   429512    0.057    0.000    0.057    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_jit_internal.py:1120(is_scripting)
+     1168    0.056    0.000    0.056    0.000 {built-in method torch.gather}
+    49640    0.025    0.000    0.055    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_utils.py:851(is_compiling)
+     3568    0.031    0.000    0.052    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:2955(__init__)
+   161440    0.052    0.000    0.052    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\view.py:5(__init__)
+    50872    0.050    0.000    0.050    0.000 {method 'item' of 'torch._C.TensorBase' objects}
+   338824    0.046    0.000    0.046    0.000 {method 'extend' of 'list' objects}
+      584    0.002    0.000    0.046    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\_foreach_utils.py:30(_group_tensors_by_device_and_dtype)
+      584    0.021    0.000    0.045    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_tensor.py:968(__rdiv__)
+    10704    0.044    0.000    0.044    0.000 {built-in method torch.dropout}
+     3568    0.020    0.000    0.044    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:404(can_infer_num_nodes)
+        5    0.000    0.000    0.044    0.009 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:574(save)
+   309238    0.044    0.000    0.044    0.000 {method 'items' of 'collections.OrderedDict' objects}
+      584    0.004    0.000    0.043    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:109(_default_to_fused_or_foreach)
+     3568    0.003    0.000    0.043    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:620(_next_index)
+   249880    0.041    0.000    0.041    0.000 {method 'values' of 'dict' objects}
+      584    0.041    0.000    0.041    0.000 {built-in method torch._C._group_tensors_by_device_and_dtype}
+   243812    0.041    0.000    0.041    0.000 {method 'items' of 'dict' objects}
+        5    0.002    0.000    0.040    0.008 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:779(_save)
+     3568    0.040    0.000    0.040    0.000 {method 'random_' of 'torch._C.TensorBase' objects}
+    24980    0.014    0.000    0.040    0.000 <frozen abc>:117(__instancecheck__)
+     3568    0.040    0.000    0.040    0.000 {built-in method torch.empty}
+      584    0.007    0.000    0.040    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\adam.py:572(<listcomp>)
+   236187    0.039    0.000    0.039    0.000 {function _ParameterMeta.__instancecheck__ at 0x000002797FD4A3E0}
+     7136    0.028    0.000    0.039    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\sampler.py:274(__iter__)
+      584    0.001    0.000    0.039    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\trace_rules.py:3377(check)
+      584    0.039    0.000    0.039    0.000 {built-in method torch._foreach_lerp_}
+      584    0.006    0.000    0.038    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\trace_rules.py:3342(check_verbose)
+      584    0.038    0.000    0.038    0.000 {built-in method torch._foreach_addcdiv_}
+     3568    0.009    0.000    0.037    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:948(x)
+     4736    0.023    0.000    0.037    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\profiler.py:593(__init__)
+     3568    0.036    0.000    0.036    0.000 {built-in method torch.set_vital}
+      584    0.006    0.000    0.036    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\__init__.py:60(_make_grads)
+    28544    0.015    0.000    0.035    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\view.py:26(__iter__)
+      584    0.033    0.000    0.033    0.000 {built-in method torch._foreach_div_}
+    28544    0.024    0.000    0.033    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\enum.py:688(__call__)
+     3568    0.012    0.000    0.033    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:93(_get_distributed_settings)
+    23360    0.021    0.000    0.033    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:97(_dispatch_sqrt)
+    49056    0.026    0.000    0.032    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:2260(<lambda>)
+      584    0.032    0.000    0.032    0.000 {built-in method torch._foreach_addcmul_}
+    23944    0.032    0.000    0.032    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:122(<genexpr>)
+      584    0.030    0.000    0.030    0.000 {built-in method torch._foreach_mul_}
+     7136    0.016    0.000    0.029    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\grad_mode.py:183(__init__)
+      584    0.029    0.000    0.029    0.000 {built-in method torch.ones_like}
+      584    0.028    0.000    0.028    0.000 {built-in method builtins.abs}
+     2428    0.026    0.000    0.027    0.000 {method 'sort' of 'list' objects}
+    21408    0.022    0.000    0.027    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\experimental.py:18(get_options)
+    24980    0.026    0.000    0.026    0.000 {built-in method _abc._abc_instancecheck}
+      584    0.005    0.000    0.026    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:327(_cuda_graph_capture_health_check)
+    95544    0.026    0.000    0.026    0.000 {method 'values' of 'collections.OrderedDict' objects}
+      584    0.025    0.000    0.025    0.000 {method 'gather' of 'torch._C.TensorBase' objects}
+      584    0.001    0.000    0.025    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_tensor.py:964(__rsub__)
+     2984    0.010    0.000    0.025    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\grad_mode.py:83(__exit__)
+    80720    0.025    0.000    0.025    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:623(stores)
+     2089    0.024    0.000    0.024    0.000 {method 'numpy' of 'torch._C.TensorBase' objects}
+      584    0.024    0.000    0.024    0.000 {method 'reciprocal' of 'torch._C.TensorBase' objects}
+      584    0.023    0.000    0.023    0.000 {built-in method torch.rsub}
+      600    0.004    0.000    0.023    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:314(_calculate_seen_percentage)
+   161445    0.023    0.000    0.023    0.000 {method 'keys' of 'dict' objects}
+     1505    0.007    0.000    0.023    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\fromnumeric.py:1140(argmax)
+   125664    0.023    0.000    0.023    0.000 {built-in method builtins.id}
+        5    0.003    0.001    0.022    0.004 {method 'dump' of '_pickle.Pickler' objects}
+    32112    0.016    0.000    0.021    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:3002(<genexpr>)
+    24976    0.016    0.000    0.020    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\container.py:311(__len__)
+     3573    0.020    0.000    0.020    0.000 {built-in method torch._C._log_api_usage_once}
+     1752    0.019    0.000    0.019    0.000 {method 'squeeze' of 'torch._C.TensorBase' objects}
+    77152    0.019    0.000    0.019    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:627(node_stores)
+      600    0.003    0.000    0.019    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\fromnumeric.py:2177(sum)
+      584    0.003    0.000    0.019    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\trace_rules.py:3432(lookup_inner)
+     2984    0.008    0.000    0.019    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\grad_mode.py:79(__enter__)
+     3568    0.013    0.000    0.018    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:167(get_annotations)
+    10704    0.011    0.000    0.018    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_VF.py:26(__getattr__)
+     3568    0.004    0.000    0.018    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:956(edge_index)
+    34064    0.018    0.000    0.018    0.000 {built-in method math.sqrt}
+     7136    0.014    0.000    0.018    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:179(keys)
+    21408    0.018    0.000    0.018    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\experimental.py:34(<listcomp>)
+     3568    0.004    0.000    0.017    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:972(edge_attr)
+     1505    0.003    0.000    0.016    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\fromnumeric.py:53(_wrapfunc)
+     3568    0.011    0.000    0.016    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:735(unwrap)
+     3568    0.004    0.000    0.016    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:996(batch)
+     7136    0.011    0.000    0.016    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\container.py:207(__iter__)
+     3568    0.011    0.000    0.016    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:74(create_fetcher)
+     1168    0.003    0.000    0.016    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\package\package_importer.py:694(_patched_getfile)
+    77156    0.016    0.000    0.016    0.000 {built-in method builtins.sum}
+      600    0.004    0.000    0.016    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\fromnumeric.py:71(_wrapreduction)
+    20096    0.015    0.000    0.015    0.000 {built-in method __new__ of type object at 0x00007FF816C0C4C0}
+     3568    0.007    0.000    0.015    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\distributed\distributed_c10d.py:973(is_initialized)
+     2400    0.010    0.000    0.015    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:145(add)
+     3568    0.015    0.000    0.015    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\_utils\fetch.py:51(<listcomp>)
+      596    0.002    0.000    0.014    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\__init__.py:105(is_available)
+     5352    0.004    0.000    0.014    0.000 {built-in method builtins.any}
+      600    0.013    0.000    0.013    0.000 {method 'clone' of 'torch._C.TensorBase' objects}
+    32696    0.013    0.000    0.013    0.000 {built-in method torch._C._has_torch_function_unary}
+4737/4736    0.012    0.000    0.013    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:373(inner)
+      210    0.002    0.000    0.012    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\storage.py:134(cpu)
+     1505    0.012    0.000    0.012    0.000 {method 'argmax' of 'numpy.ndarray' objects}
+     1168    0.006    0.000    0.012    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:892(getfile)
+     3568    0.010    0.000    0.011    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\sampler.py:261(__init__)
+      584    0.004    0.000    0.011    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\trace_rules.py:3275(check_file)
+    23360    0.011    0.000    0.011    0.000 {built-in method torch.is_complex}
+     3568    0.009    0.000    0.011    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\sampler.py:110(__iter__)
+     2984    0.010    0.000    0.011    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\grad_mode.py:74(__init__)
+     7136    0.011    0.000    0.011    0.000 {built-in method torch._C._set_grad_enabled}
+      616    0.011    0.000    0.011    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      596    0.002    0.000    0.011    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\__init__.py:101(_nvml_based_avail)
+      210    0.011    0.000    0.011    0.000 {method 'copy_' of 'torch._C.StorageBase' objects}
+     7136    0.007    0.000    0.010    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\backends\__init__.py:36(__get__)
+    14272    0.007    0.000    0.010    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:574(__getitem__)
+    23944    0.008    0.000    0.010    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\adam.py:303(<genexpr>)
+     4059    0.004    0.000    0.010    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\enum.py:772(__getattr__)
+     5310    0.005    0.000    0.010    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:789(persistent_id)
+    80720    0.009    0.000    0.009    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\storage.py:759(_key)
+    28544    0.009    0.000    0.009    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\enum.py:1095(__new__)
+      584    0.003    0.000    0.009    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:550(__init__)
+      596    0.001    0.000    0.009    0.000 <frozen os>:773(getenv)
+     3568    0.006    0.000    0.008    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\distributed\distributed_c10d.py:588(WORLD)
+      220    0.000    0.000    0.008    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_tensor.py:212(__reduce_ex__)
+     1168    0.008    0.000    0.008    0.000 {method 'expand' of 'torch._C.TensorBase' objects}
+      584    0.008    0.000    0.008    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:160(<listcomp>)
+      596    0.002    0.000    0.008    0.000 <frozen _collections_abc>:771(get)
+      220    0.003    0.000    0.008    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_tensor.py:247(_reduce_ex_internal)
+    28544    0.007    0.000    0.007    0.000 {method '__contains__' of 'frozenset' objects}
+     3568    0.003    0.000    0.007    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:393(multiprocessing_context)
+      584    0.001    0.000    0.007    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\utils.py:862(getfile)
+      584    0.007    0.000    0.007    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:169(<listcomp>)
+      584    0.007    0.000    0.007    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:165(<listcomp>)
+      584    0.007    0.000    0.007    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:161(<listcomp>)
+      584    0.007    0.000    0.007    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:164(<listcomp>)
+    28544    0.007    0.000    0.007    0.000 {method 'isidentifier' of 'str' objects}
+     3568    0.004    0.000    0.007    0.000 <string>:1(<lambda>)
+      584    0.007    0.000    0.007    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:162(<listcomp>)
+     2984    0.004    0.000    0.007    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\_contextlib.py:149(__new__)
+      584    0.006    0.000    0.006    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:163(<listcomp>)
+      584    0.005    0.000    0.006    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:290(__init__)
+      584    0.006    0.000    0.006    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:166(<listcomp>)
+      584    0.002    0.000    0.006    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\_contextlib.py:141(clone)
+     3568    0.004    0.000    0.006    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\distributed\__init__.py:9(is_available)
+      584    0.006    0.000    0.006    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:167(<listcomp>)
+    14763    0.006    0.000    0.006    0.000 {built-in method builtins.hasattr}
+      584    0.003    0.000    0.006    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\functools.py:35(update_wrapper)
+      596    0.004    0.000    0.006    0.000 <frozen os>:674(__getitem__)
+     7008    0.004    0.000    0.006    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\trace_rules.py:3279(<genexpr>)
+      584    0.006    0.000    0.006    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:168(<listcomp>)
+    10704    0.006    0.000    0.006    0.000 {built-in method torch.is_grad_enabled}
+     4059    0.005    0.000    0.006    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\enum.py:48(_is_dunder)
+      895    0.003    0.000    0.006    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\random.py:367(choice)
+    21650    0.005    0.000    0.005    0.000 {built-in method builtins.max}
+     8304    0.005    0.000    0.005    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:378(isfunction)
+     3568    0.005    0.000    0.005    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\_utils\fetch.py:8(__init__)
+    21652    0.005    0.000    0.005    0.000 {built-in method builtins.min}
+    10704    0.005    0.000    0.005    0.000 {built-in method torch._C._has_torch_function_variadic}
+       12    0.000    0.000    0.005    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\memory.py:165(memory_stats)
+    28544    0.005    0.000    0.005    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:2722(name)
+      584    0.000    0.000    0.004    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\graphs.py:23(is_current_stream_capturing)
+     3568    0.004    0.000    0.004    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:486(check_worker_number_rationality)
+     4352    0.004    0.000    0.004    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\grid.py:30(set_agent)
+       26    0.004    0.000    0.004    0.000 {built-in method builtins.print}
+    10704    0.004    0.000    0.004    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\_utils\worker.py:89(get_worker_info)
+      584    0.004    0.000    0.004    0.000 {built-in method torch._C._cuda_isCurrentStreamCapturing}
+      584    0.001    0.000    0.004    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:448(<listcomp>)
+      220    0.004    0.000    0.004    0.000 {built-in method torch._C.write_record}
+    10704    0.004    0.000    0.004    0.000 {built-in method _operator.index}
+    220/5    0.001    0.000    0.004    0.001 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:1845(state_dict)
+     7136    0.003    0.000    0.003    0.000 {built-in method torch._C._get_cudnn_enabled}
+    21408    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:2726(default)
+     3568    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\sampler.py:107(__init__)
+      584    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\adam.py:570(<listcomp>)
+     3568    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:445(_index_sampler)
+     1752    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\variables\base.py:127(__instancecheck__)
+      584    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:141(change)
+        4    0.000    0.000    0.003    0.001 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:104(_gen_grid)
+     3568    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\loader\dataloader.py:14(__init__)
+     2505    0.003    0.000    0.003    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\grid.py:24(get)
+  1932/12    0.002    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\memory.py:249(_recurse_add_to_result)
+      584    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\trace_rules.py:2840(is_aten_op_or_tensor_method)
+     3568    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\batch.py:32(MetaResolver)
+        6    0.000    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\memory.py:364(memory_allocated)
+     1752    0.001    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:939(<genexpr>)
+      895    0.002    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\random.py:235(_randbelow_with_getrandbits)
+    10704    0.003    0.000    0.003    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\utils\num_nodes.py:12(maybe_num_nodes)
+    14272    0.002    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\conv\message_passing.py:640(update)
+     3568    0.002    0.000    0.002    0.000 {method 'items' of 'mappingproxy' objects}
+      596    0.001    0.000    0.002    0.000 <frozen os>:748(encodekey)
+       80    0.002    0.000    0.002    0.000 {built-in method torch.zeros_like}
+      600    0.002    0.000    0.002    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:383(<listcomp>)
+     3600    0.002    0.000    0.002    0.000 {built-in method builtins.issubclass}
+        6    0.000    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\memory.py:402(memory_reserved)
+     7136    0.002    0.000    0.002    0.000 {method 'pop' of 'dict' objects}
+     1752    0.001    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:265(innermost_fn)
+        5    0.000    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:495(_open_zipfile_writer)
+        5    0.002    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:460(__init__)
+     2400    0.002    0.000    0.002    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\grid.py:41(get_agent)
+     3568    0.002    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\distributed\distributed_c10d.py:460(default_pg)
+     7136    0.002    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\data\dataloader.py:441(_auto_collation)
+      584    0.001    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\_foreach_utils.py:35(<dictcomp>)
+     6433    0.002    0.000    0.002    0.000 {method 'startswith' of 'str' objects}
+     2400    0.002    0.000    0.002    0.000 {method 'random' of '_random.Random' objects}
+     8888    0.002    0.000    0.002    0.000 {built-in method builtins.callable}
+     4996    0.002    0.000    0.002    0.000 {method 'index' of 'list' objects}
+      600    0.002    0.000    0.002    0.000 {built-in method numpy.zeros}
+      584    0.001    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\_foreach_utils.py:12(_get_fused_kernels_supported_devices)
+     2336    0.001    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:292(isclass)
+     2400    0.002    0.000    0.002    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:38(time_step)
+     3568    0.002    0.000    0.002    0.000 {built-in method sys.getrecursionlimit}
+      220    0.001    0.000    0.002    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_tensor.py:241(_typed_storage)
+      156    0.001    0.000    0.002    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:317(_handle_overlap)
+     2920    0.002    0.000    0.002    0.000 {built-in method torch._C._has_torch_function}
+     2340    0.002    0.000    0.002    0.000 {method 'endswith' of 'str' objects}
+      584    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:119(backend_cache_manager)
+      596    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\__init__.py:96(_is_compiled)
+      100    0.000    0.000    0.001    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:162(_place_object)
+      584    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\logging\__init__.py:1720(getEffectiveLevel)
+       75    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\dense\linear.py:158(_save_to_state_dict)
+     5396    0.001    0.000    0.001    0.000 {method 'append' of 'collections.deque' objects}
+      220    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:379(location_tag)
+     7137    0.001    0.000    0.001    0.000 {built-in method builtins.globals}
+     1168    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:456(istraceback)
+     1168    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:283(ismodule)
+      584    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\functools.py:65(wraps)
+     5090    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\__init__.py:633(is_storage)
+     4219    0.001    0.000    0.001    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:215(<lambda>)
+     4736    0.001    0.000    0.001    0.000 {method '__exit__' of 'torch._C.DisableTorchFunctionSubclass' objects}
+      584    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:91(_stack_if_compiling)
+       12    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\memory.py:265(memory_stats_as_nested_dict)
+     1752    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:942(<genexpr>)
+      600    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\fromnumeric.py:72(<dictcomp>)
+      584    0.001    0.000    0.001    0.000 <string>:2(__init__)
+      231    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\copyreg.py:113(_slotnames)
+      220    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\storage.py:933(_size)
+      584    0.001    0.000    0.001    0.000 {built-in method torch._C._are_functorch_transforms_active}
+      584    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\utils.py:435(hashable)
+        4    0.000    0.000    0.001    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\grid.py:59(wall_rect)
+        5    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:474(__exit__)
+     1168    0.001    0.000    0.001    0.000 {built-in method torch._C._get_privateuse1_backend_name}
+      105    0.000    0.000    0.001    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:537(_rand_pos)
+        5    0.001    0.000    0.001    0.000 {built-in method torch._C.write_end_of_file}
+     1168    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:300(ismethod)
+      596    0.001    0.000    0.001    0.000 <frozen os>:742(check_str)
+     1168    0.001    0.000    0.001    0.000 {built-in method torch._C._dynamo.eval_frame.set_eval_frame}
+      388    0.001    0.000    0.001    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:507(_reward)
+      600    0.000    0.000    0.001    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:174(__len__)
+     1168    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:480(iscode)
+     4736    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\jit\__init__.py:127(annotate)
+     1168    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:466(isframe)
+      440    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\storage.py:581(__init__)
+     3568    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\inspect.py:3015(parameters)
+        4    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\gymnasium\core.py:121(reset)
+      220    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_utils.py:184(get_tensor_metadata)
+     3568    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\data\data.py:620(stores_as)
+      145    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\nn\modules\module.py:1806(_save_to_state_dict)
+        4    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\gymnasium\utils\seeding.py:9(np_random)
+      210    0.001    0.000    0.001    0.000 {method 'integers' of 'numpy.random._generator.Generator' objects}
+      584    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\_foreach_utils.py:8(_get_foreach_kernels_supported_devices)
+       12    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\_utils.py:9(_get_device_index)
+     1505    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\fromnumeric.py:1136(_argmax_dispatcher)
+      584    0.001    0.000    0.001    0.000 {method 'numel' of 'torch._C.TensorBase' objects}
+      220    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\storage.py:817(_element_size)
+       16    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\fromnumeric.py:3385(mean)
+      584    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:149(revert)
+      584    0.001    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\backends\cuda\__init__.py:33(is_built)
+      440    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\storage.py:509(__new__)
+       12    0.000    0.000    0.001    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_utils.py:759(_get_device_index)
+       16    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\_methods.py:101(_mean)
+       12    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_utils.py:733(_get_current_device_index)
+      220    0.000    0.000    0.000    0.000 {built-in method torch._C._get_tensor_metadata}
+      220    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:208(_cpu_tag)
+      584    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\autograd\__init__.py:155(_tensor_or_tensors_to_tuple)
+        8    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\grid.py:47(horz_wall)
+       12    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_utils.py:721(_get_device_attr)
+        8    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\grid.py:53(vert_wall)
+      220    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:213(_cuda_tag)
+      220    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_utils.py:817(_element_size)
+     1793    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+      804    0.000    0.000    0.000    0.000 {method 'setdefault' of 'dict' objects}
+      596    0.000    0.000    0.000    0.000 {built-in method torch._C._cuda_getDeviceCount}
+      584    0.000    0.000    0.000    0.000 {method 'update' of 'dict' objects}
+      596    0.000    0.000    0.000    0.000 {method 'upper' of 'str' objects}
+      336    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\world.py:111(__init__)
+    110/5    0.000    0.000    0.000    0.000 <frozen abc>:121(__subclasscheck__)
+    110/5    0.000    0.000    0.000    0.000 {built-in method _abc._abc_subclasscheck}
+       12    0.000    0.000    0.000    0.000 {built-in method torch._C._cuda_memoryStats}
+      220    0.000    0.000    0.000    0.000 {built-in method torch._C._has_storage}
+     1168    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\decorators.py:148(graph_break)
+       75    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch_geometric\nn\dense\linear.py:21(is_uninitialized_parameter)
+      640    0.000    0.000    0.000    0.000 {method 'nbytes' of 'torch._C.StorageBase' objects}
+      220    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_utils.py:438(_get_obj_state)
+        4    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\contextlib.py:78(inner)
+      436    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\grid.py:19(set)
+       12    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_utils.py:708(_get_available_device_type)
+      586    0.000    0.000    0.000    0.000 {built-in method builtins.hash}
+      440    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\world.py:11(__init__)
+      2/1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:500(__getitem__)
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:723(Optional)
+      220    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_namedtensor_internals.py:10(check_serializing_named_tensor)
+      210    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\storage.py:37(size)
+      895    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
+      220    0.000    0.000    0.000    0.000 {method 'untyped_storage' of 'torch._C.TensorBase' objects}
+      600    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\fromnumeric.py:2172(_sum_dispatcher)
+     1168    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:261(always_false)
+      220    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\storage.py:943(_pickle_storage_type)
+      660    0.000    0.000    0.000    0.000 {method 'data_ptr' of 'torch._C.StorageBase' objects}
+       84    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\world.py:119(__init__)
+      584    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_dynamo\eval_frame.py:257(nothing)
+        3    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:168(_type_check)
+        4    0.000    0.000    0.000    0.000 {function SeedSequence.generate_state at 0x000002797F79ACA0}
+      220    0.000    0.000    0.000    0.000 {method 'stride' of 'torch._C.TensorBase' objects}
+       16    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\_methods.py:67(_count_reduce_items)
+      584    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:2287(cast)
+       12    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_utils.py:735(<lambda>)
+        4    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\_ufunc_config.py:430(__enter__)
+      584    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:358(_optimizer_step_code)
+        8    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\_ufunc_config.py:33(seterr)
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:679(Union)
+      135    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\onnx\utils.py:70(is_in_onnx_export)
+      220    0.000    0.000    0.000    0.000 {method 'has_names' of 'torch._C.TensorBase' objects}
+      220    0.000    0.000    0.000    0.000 {method 'storage_offset' of 'torch._C.TensorBase' objects}
+       12    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\__init__.py:776(current_device)
+        3    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:159(_type_convert)
+       16    0.000    0.000    0.000    0.000 {built-in method numpy.asanyarray}
+      231    0.000    0.000    0.000    0.000 {method 'get' of 'mappingproxy' objects}
+      220    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\utils\hooks.py:82(warn_if_has_hooks)
+      220    0.000    0.000    0.000    0.000 {method 'data_ptr' of 'torch._C.TensorBase' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:866(__init__)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.compile}
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_ops.py:800(__getattr__)
+      220    0.000    0.000    0.000    0.000 {method '__getstate__' of 'object' objects}
+      169    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\world.py:20(can_overlap)
+       16    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\environment.py:155(_place_agent)
+       40    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\optim\optimizer.py:135(_get_scalar_dtype)
+      210    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\gymnasium\core.py:215(np_random)
+       24    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\__init__.py:216(is_initialized)
+        8    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\_ufunc_config.py:132(geterr)
+       12    0.000    0.000    0.000    0.000 {built-in method torch._C._cuda_getDevice}
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:1376(__init__)
+        3    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:715(<genexpr>)
+       20    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\world.py:130(__init__)
+        5    0.000    0.000    0.000    0.000 {built-in method builtins.sorted}
+      210    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\storage.py:29(__init__)
+        4    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\_ufunc_config.py:435(__exit__)
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_ops.py:547(__init__)
+       17    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:916(__eq__)
+      135    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\onnx\_globals.py:62(in_onnx_export)
+      122    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\world.py:123(can_overlap)
+       16    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\world.py:82(reset)
+       12    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\cuda\__init__.py:263(_lazy_init)
+        4    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\grid.py:11(__init__)
+       99    0.000    0.000    0.000    0.000 <frozen _collections_abc>:262(__subclasshook__)
+        1    0.000    0.000    0.000    0.000 {built-in method torch._C._get_operation_overload}
+        7    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:1320(__setattr__)
+       24    0.000    0.000    0.000    0.000 {built-in method torch._C._cuda_isInBadFork}
+        4    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:1279(__init__)
+       40    0.000    0.000    0.000    0.000 {built-in method torch.get_default_dtype}
+        5    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:567(_check_save_filelike)
+        8    0.000    0.000    0.000    0.000 {built-in method numpy.seterrobj}
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:334(_remove_dups_flatten)
+       10    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:408(_is_path)
+       16    0.000    0.000    0.000    0.000 {built-in method numpy.core._multiarray_umath.normalize_axis_index}
+        5    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:413(__init__)
+        2    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\network.py:126(update_beta)
+        7    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:1266(_is_dunder)
+       34    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\minigrid\world.py:133(can_overlap)
+       16    0.000    0.000    0.000    0.000 {built-in method numpy.geterrobj}
+        1    0.000    0.000    0.000    0.000 {built-in method torch._C._get_schema}
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\storage.py:389(_dtype_to_storage_type_map)
+        5    0.000    0.000    0.000    0.000 {method 'encode' of 'str' objects}
+        5    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:547(_check_dill_version)
+        5    0.000    0.000    0.000    0.000 {method 'getvalue' of '_io.BytesIO' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:306(_deduplicate)
+       16    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\fromnumeric.py:3380(_mean_dispatcher)
+        4    0.000    0.000    0.000    0.000 {built-in method builtins.round}
+        4    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\main.py:76(<listcomp>)
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:251(_collect_parameters)
+        4    0.000    0.000    0.000    0.000 {built-in method time.time}
+        2    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:925(__hash__)
+       12    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method fromkeys}
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\OneDrive\Code\GNN-DQN-MARL\Agents-4\Baseline1-21\main.py:72(<listcomp>)
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\_ops.py:43(__init__)
+        5    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\torch\serialization.py:416(__enter__)
+        4    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\site-packages\numpy\core\multiarray.py:153(concatenate)
+        1    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:479(__repr__)
+        1    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+        3    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\typing.py:1381(<genexpr>)
+        4    0.000    0.000    0.000    0.000 C:\Users\elrod\anaconda3\envs\GNN\Lib\contextlib.py:65(_recreate_cm)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 <frozen _collections_abc>:409(__subclasshook__)
+
+

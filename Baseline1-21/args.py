@@ -8,7 +8,7 @@ class Args:
         self.env              = None
         self.num_agents       = 4
         self.num_goals        = 20
-        self.num_obstacles    = 5
+        self.num_obstacles    = 0
         self.grid_size        = 21
         self.agent_view_size  = 9
         self.action_size      = 4
@@ -22,7 +22,7 @@ class Args:
         self.priority_replay  = True
 
         # Training parameters
-        self.total_steps      = 2500000
+        self.total_steps      = 600
         self.episode_steps    = 150
         self.eps_start        = 1.0
         self.eps_end          = 0.01
@@ -43,7 +43,7 @@ class Args:
         self.gnn_concat_heads     = False
         self.node_obs_shape       = 8
         self.edge_dim             = 1
-        self.num_embeddings       = 3
+        self.num_embeddings       = 2
         self.embedding_size       = 12
         self.gnn_layer_N          = 2
         self.gnn_use_ReLU         = True
@@ -61,9 +61,9 @@ class Args:
         # Run Parameters
         self.device       = 'cuda'
         self.load_policy  = False    # Evaluate a learned policy
-        self.logger       = True     # Log training data to Wandb
-        self.render       = False     # Render the environment
-        self.debug        = False     # Allow manual action inputs
+        self.logger       = False     # Log training data to Wandb
+        self.render       = True     # Render the environment
+        self.debug        = True     # Allow manual action inputs
 
         # Reward Parameters
         self.reward_goal = 5
