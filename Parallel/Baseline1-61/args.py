@@ -6,10 +6,10 @@ class Args:
     def __init__(self):
         # Env Parameters
         self.env              = None
-        self.num_agents       = 4
-        self.num_goals        = 20
+        self.num_agents       = 30
+        self.num_goals        = 150
         self.num_obstacles    = 0
-        self.grid_size        = 21
+        self.grid_size        = 61
         self.agent_view_size  = 9
         self.action_size      = 4
         self.obs_size         = ((1 + self.num_goals) * 2) + self.num_goals
@@ -22,7 +22,7 @@ class Args:
         self.priority_replay  = True
 
         # Training parameters
-        self.total_steps      = 600
+        self.total_steps      = 2500000
         self.episode_steps    = 150
         self.eps_start        = 1.0
         self.eps_end          = 0.01
@@ -62,7 +62,7 @@ class Args:
         self.device       = 'cuda'
         self.load_policy  = False    # Evaluate a learned policy
         self.logger       = False     # Log training data to Wandb
-        self.render       = True     # Render the environment
+        self.render       = False     # Render the environment
         self.debug        = False     # Allow manual action inputs
 
         # Reward Parameters

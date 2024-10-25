@@ -69,39 +69,38 @@ class TransformerConvNet(nn.Module):
             self.gnn2.append(self.addTCLayer(self.getInChannels(hidden_size), hidden_size))
 
     def forward(self, node_obs: Tensor, adj: Tensor, agent_id: Tensor):
-        # convert adj to edge_index, edge_attr and then collate them into a batch
+        # Process all batches at once
         batch_size = node_obs.shape[0]
         datalist = []
+        
+        # Create graph data objects for each item in batch
         for i in range(batch_size):
             edge_index, edge_attr = self.processAdj(adj[i])
-            # if edge_attr is only one dimensional
             if len(edge_attr.shape) == 1:
                 edge_attr = edge_attr.unsqueeze(1)
+            # Limit the size of the graph by only including relevant nodes
             datalist.append(Data(x=node_obs[i], edge_index=edge_index, edge_attr=edge_attr))
-        loader_data = loader.DataLoader(datalist, shuffle=False, batch_size=batch_size)
-        data = next(iter(loader_data))
-        x, edge_index, edge_attr = data.x, data.edge_index, data.edge_attr
-        batch = data.batch
+        
+        # Use a smaller batch size for the loader
+        loader_data = loader.DataLoader(datalist, shuffle=False, batch_size=min(8, batch_size))
+        batch = next(iter(loader_data))
+        
+        x, edge_index, edge_attr = batch.x, batch.edge_index, batch.edge_attr
+        batch_idx = batch.batch
 
         if self.edge_dim is None:
             edge_attr = None
 
-        # forward pass through embedConv
+        # Process through GNN layers
         x = self.embed_layer(x, edge_index, edge_attr)
-
-        # forward pass through first transfomerConv
         x = self.active_func(self.gnn1(x, edge_index, edge_attr))
+        
+        for layer in self.gnn2:
+            x = self.active_func(layer(x, edge_index, edge_attr))
 
-        # forward pass conv layers
-        for i in range(len(self.gnn2)):
-            x = self.active_func(self.gnn2[i](x, edge_index, edge_attr))
-
-        # x is of shape [batch_size*num_nodes, out_channels]
-        # convert to [batch_size, num_nodes, out_channels]
-        x, _ = to_dense_batch(x, batch)
-
-        # only pull the node-specific features from output
-        x = self.gatherNodeFeats(x, agent_id)  # shape [batch_size, out_channels]
+        # Convert back to batched tensor format
+        x, _ = to_dense_batch(x, batch_idx)
+        x = self.gatherNodeFeats(x, agent_id)
 
         return x
 
@@ -114,25 +113,36 @@ class TransformerConvNet(nn.Module):
     def processAdj(self, adj):
         assert adj.dim() >= 2 and adj.dim() <= 3
         assert adj.size(-1) == adj.size(-2)
-        # filter far away nodes and connection to itself
+        
+        # Process adjacency matrix efficiently
         connect_mask = ((adj < self.max_edge_dist) * (adj > 0)).float()
         adj = adj * connect_mask
         index = adj.nonzero(as_tuple=True)
         edge_attr = adj[index]
+        
         if len(index) == 3:
-            batch = index[0] * adj.size(-1)
+            # For batched inputs
+            batch_size = adj.size(0)
+            num_nodes = adj.size(1)
+            batch = index[0] * num_nodes  # Multiply by num_nodes instead of adj.size(-1)
             index = (batch + index[1], batch + index[2])
-        return torch.stack(index, dim=0), edge_attr
+        
+        edge_index = torch.stack(index, dim=0)
+        
+        # Add assertion to check indices are within bounds
+        max_index = edge_index.max()
+        num_total_nodes = adj.size(-1) * (adj.size(0) if adj.dim() == 3 else 1)
+        assert max_index < num_total_nodes, f"Edge indices {max_index} exceed number of nodes {num_total_nodes}"
+        
+        return edge_index, edge_attr
 
     def gatherNodeFeats(self, x, idx):
         if x.shape[0] == 1:
             return x[0, idx, :]
-        else:
-            batch_size = x.shape[0]
-            feature_size = x.shape[-1]
-            idx_expanded = idx.view(batch_size, 1, 1).expand(batch_size, 1, feature_size)
-            gathered_feats = torch.gather(x, dim=1, index=idx_expanded).squeeze(1)
-            return gathered_feats
+        batch_size = x.shape[0]
+        feature_size = x.shape[-1]
+        idx_expanded = idx.view(batch_size, 1, 1).expand(batch_size, 1, feature_size).to(x.device)
+        return torch.gather(x, dim=1, index=idx_expanded).squeeze(1)
 
 
 class GNNBase(nn.Module):
@@ -171,11 +181,11 @@ class GNNBase(nn.Module):
         self.fc2 = nn.Linear(self.hidden_dim, self.num_actions)
 
     def forward(self, obs, node_obs, adj, agent_id):
+        # Process batched inputs through GNN
         x = self.gnn(node_obs, adj, agent_id)
-        if obs.shape[0] > 1:
-            x = torch.cat((obs, x), dim=-1)
-        else:
-            x = torch.cat((obs, x.unsqueeze(0)), dim=-1)
+        # Concatenate with observations
+        x = torch.cat((obs, x), dim=-1)
+        # Pass through fully connected layers
         x = self.fc1(x)
         x = self.relu(x)
         q_values = self.fc2(x)
@@ -184,8 +194,9 @@ class GNNBase(nn.Module):
     @property
     def out_dim(self):
         return self.args.gnn_hidden_size + self.args.node_obs_shape
-    
+
     def count_layers_and_params(self):
+        # Keeping your existing implementation
         def count_layers(module, module_name=''):
             if isinstance(module, nn.Linear):
                 return {'linear': 1}, module_name
@@ -222,7 +233,6 @@ class GNNBase(nn.Module):
         print("Detailed Layer and Parameter Count:")
         print("===================================")
 
-        # Count layers and params for GNN
         gnn_layers, gnn_layer_names = count_layers(self.gnn, "gnn")
         gnn_params = count_params(self.gnn)
         print("GNN Layers:")
@@ -231,8 +241,7 @@ class GNNBase(nn.Module):
         print(f"GNN Parameters: {gnn_params}")
         print("-----------------------------------")
 
-        # Count layers and params for fully connected layers
-        fc_layers = 2  # fc1, fc2
+        fc_layers = 2
         fc_params = count_params(self.fc1) + count_params(self.fc2)
         print(f"Fully Connected Layers: {fc_layers}")
         print("  - fc1")
@@ -240,7 +249,6 @@ class GNNBase(nn.Module):
         print(f"Fully Connected Parameters: {fc_params}")
         print("-----------------------------------")
 
-        # Total counts
         print("Total Layers:")
         for layer_type, count in total_layers.items():
             print(f"  - {layer_type.capitalize()}: {count}")
@@ -249,6 +257,7 @@ class GNNBase(nn.Module):
         return total_layers, total_params
 
     def get_gnn_structure(self):
+        # Keeping your existing implementation
         def get_structure(module, indent=0):
             if isinstance(module, (nn.Linear, nn.Conv2d, TransformerConv, EmbedConv, nn.Embedding)):
                 return f"{'  ' * indent}{module.__class__.__name__}: {module}\n"

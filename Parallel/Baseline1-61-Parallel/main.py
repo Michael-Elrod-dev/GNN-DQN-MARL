@@ -1,7 +1,5 @@
 import torch
-import cProfile
-import pstats
-import io
+# import cProfile
 import numpy as np
 
 from args import Args
@@ -11,9 +9,6 @@ from network import GR_QNetwork
 from minigrid.world import Agent
 from minigrid.environment import MultiGridEnv
 from utils import print_info
-
-assert torch.cuda.is_available(), "CUDA is not available. Please check your installation."
-
 
 
 def test(env, agents, network, args):
@@ -69,54 +64,56 @@ def train(env, agents, network, logger, args):
     total_scores = deque(maxlen=100)
     steps_per_episode = deque(maxlen=100)
     seen_percentages = deque(maxlen=100)
-    agent_id = [agent.id for agent in agents]
+    agent_ids = torch.tensor([agent.id for agent in agents], device=args.device)
 
-    while step_count < 600:  # Adjusted to your shorter training process
+    while step_count < args.total_steps:
         episode_count += 1
         scores = [0 for _ in range(len(agents))]
-        obs, node_obs, adj = env.reset(args.render)
+        
+        # Get initial observations in batched form
+        obs_batch, node_obs_batch, adj_batch = env.reset(args.render)
 
         # Update network bias (PER)
         if step_count % 100 == 0:
-            network.update_beta(step_count, 600, args.prio_b)  # Adjusted total steps
+            network.update_beta(step_count, args.total_steps, args.prio_b)
 
         for step in range(args.episode_steps):
-            actions = []
             step_count += 1
 
-            # Get actions for each agent
-            for i in range(batch_size):
-                actions.append(network.action(obs[i].unsqueeze(0), node_obs[i].unsqueeze(0), adj[i].unsqueeze(0), agent_id[i], eps, args.debug))
+            # Get actions for all agents in one forward pass
+            actions = network.action(obs_batch, node_obs_batch, adj_batch, agent_ids, eps, args.debug)
 
-            # Act in the environment
-            next_obs, next_node_obs, next_adj, rewards, dones, info = env.step(actions, args.render)
+            # Step environment with batched actions
+            next_obs_batch, next_node_obs_batch, next_adj_batch, rewards, dones, info = env.step(actions, args.render)
 
             if args.debug:
                 for i in range(batch_size):
-                    print_info(agent_id[i], obs[i], node_obs[i], adj[i], actions[i], rewards[i], next_obs[i], next_node_obs[i], next_adj[i], dones[i])
+                    print_info(agent_ids[i], obs_batch[i], node_obs_batch[i], adj_batch[i], 
+                             actions[i], rewards[i], next_obs_batch[i], next_node_obs_batch[i], 
+                             next_adj_batch[i], dones[i])
 
-            # Send experience to network
+            # Process all experiences in one batch
+            loss = network.step(agent_ids, obs_batch, node_obs_batch, adj_batch, 
+                                    actions, rewards, next_obs_batch, next_node_obs_batch, 
+                                    next_adj_batch, dones)
+            
+            if loss is not None and step_count > 10000:
+                dqn_losses.append(loss.cpu().item())
+            
+            # Update scores
             for i in range(batch_size):
-                loss = network.step(agent_id[i], obs[i], node_obs[i], adj[i], actions[i], rewards[i], next_obs[i], next_node_obs[i], next_adj[i], dones[i])
-                if loss is not None:
-                    dqn_losses.append(loss.cpu().item())
                 scores[i] += rewards[i]
 
-            obs = next_obs
-            node_obs = next_node_obs
-            adj = next_adj
+            # Update observations
+            obs_batch = next_obs_batch
+            node_obs_batch = next_node_obs_batch
+            adj_batch = next_adj_batch
 
             # Update epsilon
             if eps > args.eps_end:
                 eps -= args.eps_decay
             else:
                 eps = args.eps_end
-
-            # # Print GPU usage every 100 steps
-            # if step_count % 100 == 0:
-            #     print(f"\nStep {step_count}:")
-            #     print(f"GPU memory allocated: {torch.cuda.memory_allocated() / 1e9:.2f} GB")
-            #     print(f"GPU memory reserved: {torch.cuda.memory_reserved() / 1e9:.2f} GB")
 
             if any(dones):
                 seen_percentages.append(info["seen_percentage"])
@@ -139,7 +136,8 @@ def train(env, agents, network, logger, args):
             )
             logger.log_agent_metrics(episode_count, scores)
 
-        current_progress = round((step_count / 600) * 100)  # Adjusted for 600 steps
+        # Progress tracking and model saving
+        current_progress = round((step_count / args.total_steps) * 100)
         print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f} \tAvg Seen: {np.mean(seen_percentages):.2f}%', end="")
         if current_progress != progress:
             print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f} \tAvg Seen: {np.mean(seen_percentages):.2f}%')
@@ -169,18 +167,13 @@ def main():
     # Start Run
     if not args.load_policy:
         _ = train(env, agents, network, logger, args)
-    # _ = test(env, agents, network, args)
+    _ = test(env, agents, network, args)
 
     # # Stop profiling
     # profiler.disable()
 
-    # # Save profiling results to a file
-    # s = io.StringIO()
-    # ps = pstats.Stats(profiler, stream=s).sort_stats('cumulative')
-    # ps.print_stats()
-    
-    # with open('profiler_results.txt', 'w') as f:
-    #     f.write(s.getvalue())
+    # # Print profiling stats
+    # profiler.print_stats(sort='time')
 
     # Close Environment
     if args.logger: logger.close()

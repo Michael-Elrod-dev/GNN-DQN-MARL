@@ -52,38 +52,52 @@ class GR_QNetwork():
                 loss = self.learn(experiences, experience_indexes, priorities, self.gamma)
         return loss
    
-    def action(self, obs, node_obs, adj, agent_id, eps, testing):
+    def action(self, obs, node_obs, adj, agent_id, eps, debug):
         obs = obs.float().to(self.device)
         node_obs = node_obs.float().to(self.device)
         adj = adj.float().to(self.device)
+        
         self.qnetwork_local.eval()
         with torch.no_grad():
+            # Get Q-values for all agents in batch
             action_values = self.qnetwork_local(obs, node_obs, adj, agent_id)
         self.qnetwork_local.train()
 
-        if random.random() > eps:
-            action = np.argmax(action_values.cpu().data.numpy())
-        else:
-            if testing:
-                while True:
-                    user_input = input("Enter an action (W,A,S,D): ")
-                    if user_input == 'a':
-                        action = 0  # Left
-                        break
-                    elif user_input == 'd':
-                        action = 1  # Right
-                        break
-                    elif user_input == 'w':
-                        action = 2  # Up
-                        break
-                    elif user_input == 's':
-                        action = 3  # Down
-                        break
-                    else:
-                        print("Invalid input. Please enter (W,A,S,D)")
+        # Convert to numpy for processing
+        action_values_np = action_values.cpu().data.numpy()
+        batch_size = obs.shape[0]
+        actions = []
+
+        # Process each agent in the batch
+        for i in range(batch_size):
+            if random.random() > eps:
+                # Greedy action
+                action = np.argmax(action_values_np[i])
             else:
-                action = random.choice(range(self.action_size))
-        return action
+                # Random action
+                if debug:
+                    while True:
+                        user_input = input(f"Enter an action for agent {i} (W,A,S,D): ")
+                        if user_input == 'a':
+                            action = 0  # Left
+                            break
+                        elif user_input == 'd':
+                            action = 1  # Right
+                            break
+                        elif user_input == 'w':
+                            action = 2  # Up
+                            break
+                        elif user_input == 's':
+                            action = 3  # Down
+                            break
+                        else:
+                            print("Invalid input. Please enter (W,A,S,D)")
+                else:
+                    action = random.choice(range(self.action_size))
+            actions.append(action)
+
+        # Convert list of actions to tensor
+        return torch.tensor(actions, device=self.device)
 
     def learn(self, experiences, experience_indexes, priorities, gamma):
         agent_id, obs, node_obs, adj, actions, rewards, next_obs, next_node_obs, next_adj, done = experiences
@@ -165,10 +179,10 @@ class ReplayBuffer:
         reward = torch.stack([e.reward for e in experiences if e is not None]).to(self.device)
         next_obs = torch.stack([e.next_obs for e in experiences if e is not None]).to(self.device)
         next_node_obs = torch.stack([e.next_node_obs for e in experiences if e is not None]).to(self.device)
-        next_adj  = torch.stack([e.next_adj for e in experiences if e is not None]).to(self.device)
+        next_adj = torch.stack([e.next_adj for e in experiences if e is not None]).to(self.device)
         done = torch.stack([e.done for e in experiences if e is not None]).to(self.device)
         priorities = torch.tensor([self.priority[index] for index in experience_indexes], dtype=torch.float32, device=self.device)
-
+        
         return (id, obs, node_obs, adj, action, reward, next_obs, next_node_obs, next_adj, done), experience_indexes, priorities
 
     def __len__(self):
