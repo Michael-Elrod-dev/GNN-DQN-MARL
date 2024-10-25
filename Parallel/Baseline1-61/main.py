@@ -1,5 +1,7 @@
 import torch
-# import cProfile
+import cProfile
+import pstats
+import io
 import numpy as np
 
 from args import Args
@@ -9,6 +11,9 @@ from network import GR_QNetwork
 from minigrid.world import Agent
 from minigrid.environment import MultiGridEnv
 from utils import print_info
+
+assert torch.cuda.is_available(), "CUDA is not available. Please check your installation."
+
 
 
 def test(env, agents, network, args):
@@ -66,14 +71,14 @@ def train(env, agents, network, logger, args):
     seen_percentages = deque(maxlen=100)
     agent_id = [agent.id for agent in agents]
 
-    while step_count < args.total_steps:
+    while step_count < 600:  # Adjusted to your shorter training process
         episode_count += 1
         scores = [0 for _ in range(len(agents))]
         obs, node_obs, adj = env.reset(args.render)
 
         # Update network bias (PER)
         if step_count % 100 == 0:
-            network.update_beta(step_count, args.total_steps, args.prio_b)
+            network.update_beta(step_count, 600, args.prio_b)  # Adjusted total steps
 
         for step in range(args.episode_steps):
             actions = []
@@ -93,7 +98,7 @@ def train(env, agents, network, logger, args):
             # Send experience to network
             for i in range(batch_size):
                 loss = network.step(agent_id[i], obs[i], node_obs[i], adj[i], actions[i], rewards[i], next_obs[i], next_node_obs[i], next_adj[i], dones[i])
-                if loss is not None and step_count > 10000:
+                if loss is not None:
                     dqn_losses.append(loss.cpu().item())
                 scores[i] += rewards[i]
 
@@ -106,6 +111,12 @@ def train(env, agents, network, logger, args):
                 eps -= args.eps_decay
             else:
                 eps = args.eps_end
+
+            # # Print GPU usage every 100 steps
+            # if step_count % 100 == 0:
+            #     print(f"\nStep {step_count}:")
+            #     print(f"GPU memory allocated: {torch.cuda.memory_allocated() / 1e9:.2f} GB")
+            #     print(f"GPU memory reserved: {torch.cuda.memory_reserved() / 1e9:.2f} GB")
 
             if any(dones):
                 seen_percentages.append(info["seen_percentage"])
@@ -128,7 +139,7 @@ def train(env, agents, network, logger, args):
             )
             logger.log_agent_metrics(episode_count, scores)
 
-        current_progress = round((step_count / args.total_steps) * 100)
+        current_progress = round((step_count / 600) * 100)  # Adjusted for 600 steps
         print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f} \tAvg Seen: {np.mean(seen_percentages):.2f}%', end="")
         if current_progress != progress:
             print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f} \tAvg Seen: {np.mean(seen_percentages):.2f}%')
@@ -158,13 +169,18 @@ def main():
     # Start Run
     if not args.load_policy:
         _ = train(env, agents, network, logger, args)
-    _ = test(env, agents, network, args)
+    # _ = test(env, agents, network, args)
 
     # # Stop profiling
     # profiler.disable()
 
-    # # Print profiling stats
-    # profiler.print_stats(sort='time')
+    # # Save profiling results to a file
+    # s = io.StringIO()
+    # ps = pstats.Stats(profiler, stream=s).sort_stats('cumulative')
+    # ps.print_stats()
+    
+    # with open('profiler_results.txt', 'w') as f:
+    #     f.write(s.getvalue())
 
     # Close Environment
     if args.logger: logger.close()
