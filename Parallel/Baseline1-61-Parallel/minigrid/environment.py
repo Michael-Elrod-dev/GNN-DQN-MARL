@@ -19,7 +19,6 @@ T = TypeVar("T")
 
 class MultiGridEnv(gym.Env):
     def __init__(self, args, agents):
-        self.device = args.device
         self.clock = None
         self.window = None
         self.agents = agents
@@ -90,16 +89,17 @@ class MultiGridEnv(gym.Env):
         self._gen_grid(self.width, self.height)
         self.calc_distances(True)
 
-        # Instead of building lists, create batched tensors directly
-        batch_obs = torch.stack([self._get_obs(agent) for agent in self.agents]).to(self.device)
-        batch_node_obs = torch.stack([self._get_node_features(agent) for agent in self.agents]).to(self.device)
-        batch_adj = torch.stack([self.distance_matrix for _ in self.agents]).to(self.device)
-        
-        
-        if render:
+        for agent in self.agents:
+            obs.append(self._get_obs(agent))
+        for agent in self.agents:
+            node_obs.append(self._get_node_features(agent))
+        for agent in self.agents:
+            adj.append(self.distance_matrix)
+
+        if render: 
             self.render()
         
-        return batch_obs, batch_node_obs, batch_adj
+        return obs, node_obs, adj
 
     @abstractmethod
     def _gen_grid(self, width, height):
@@ -271,7 +271,7 @@ class MultiGridEnv(gym.Env):
         obs.extend(agent.goal3.cur_pos)
         # obs.append(int(agent.goal3.collected))
 
-        agent.obs = torch.tensor(obs, device=self.device)
+        agent.obs = torch.tensor(obs)
         return agent.obs
     
     # TODO: fix numpy to tensor conversion
@@ -301,7 +301,7 @@ class MultiGridEnv(gym.Env):
             entity_features.append(0 if entity.type == 'agent' else (1 if entity.type == 'goal' else 2))
             features.append(entity_features)
         # [[[rel_pos, rel_goal_pos1, rel_goal_pos1_completed, ..., entity_type], [rel_pos, rel_goal_pos2, rel_goal_pos2_completed, ...], ...], ...]
-        return torch.tensor(np.array(features), device=self.device)
+        return torch.tensor(np.array(features))
 
     def _update_seen_cells(self):
         for agent in self.agents:
@@ -335,12 +335,12 @@ class MultiGridEnv(gym.Env):
         return reward
 
     def step(self, actions, render):
+        adj = []
+        obs = []
+        node_obs = []
+        dones = [False] * len(self.agents)
         self.step_count += 1
-        dones = torch.zeros(len(self.agents), dtype=torch.bool, device=self.device)
-        rewards = torch.zeros(len(self.agents), device=self.device)
-
-        # Convert actions tensor to CPU numpy array if needed
-        actions = actions.cpu().numpy() if torch.is_tensor(actions) else actions
+        rewards = np.zeros(len(self.agents))
 
         for i, action in enumerate(actions):
             agent_pos = self.agents[i].cur_pos
@@ -358,29 +358,34 @@ class MultiGridEnv(gym.Env):
             elif action == self.actions.right:
                 new_pos = (agent_pos[0] + 1, agent_pos[1])
 
-            # Check if the new position is valid
+            # Check if the new position is valid (not a wall and within bounds)
             cell = self.grid.get(*new_pos)
             agent = self.grid.get_agent(*new_pos)
 
-            # Handle movement and rewards
+            # If move is valid and space is empty
             if cell is None and agent is None and 0 <= new_pos[0] < self.width and 0 <= new_pos[1] < self.height:
                 self.grid.set_agent(*new_pos, self.agents[i])
                 self.grid.set_agent(*self.agents[i].cur_pos, None)
                 self.agents[i].cur_pos = new_pos
+
+            # If move is valid but involves an overlap
             elif cell and cell.can_overlap():
                 rewards[i] = self._handle_overlap(i, new_pos, cell)
+
+            # If move is not valid
             else:
                 rewards[i] = self._reward(self.penalty_invalid_move)
 
-        # Check if episode is done
-        if self.step_count >= self.max_steps or self.num_collected >= self.num_goals:
-            dones.fill_(True)
+            if self.step_count >= self.max_steps or self.num_collected >= self.num_goals:
+                dones[i] = True
 
         self.calc_distances(False)
+        dones = [True if any(dones) else d for d in dones]
+
         self._update_seen_cells()
         seen_percentage = self._calculate_seen_percentage()
 
-        if dones.any():
+        if any(dones):
             info = {
                 "goals_collected": self.num_collected,
                 "goals_percentage": (self.num_collected / self.num_goals) * 100,
@@ -388,16 +393,18 @@ class MultiGridEnv(gym.Env):
             }
         else:
             info = {}
+    
+        for agent in self.agents:
+            obs.append(self._get_obs(agent))
+        for agent in self.agents:
+            node_obs.append(self._get_node_features(agent))
+        for agent in self.agents:
+            adj.append(self.distance_matrix)
 
-        # Get next observations
-        batch_obs = torch.stack([self._get_obs(agent) for agent in self.agents]).to(self.device)
-        batch_node_obs = torch.stack([self._get_node_features(agent) for agent in self.agents]).to(self.device)
-        batch_adj = torch.stack([self.distance_matrix for _ in self.agents]).to(self.device)
-        
         if render:
             self.render()
-                
-        return batch_obs, batch_node_obs, batch_adj, rewards, dones, info
+        
+        return obs, node_obs, adj, rewards, dones, info
     
     def calc_distances(self, reset=False):
         num_entities = len(self.entities)
@@ -405,7 +412,7 @@ class MultiGridEnv(gym.Env):
         
         if reset:
             # Calculate distances between all entities
-            distance_matrix = torch.zeros((num_entities, num_entities), device=self.device)
+            distance_matrix = torch.zeros((num_entities, num_entities))
             for i in range(num_entities):
                 for j in range(i + 1, num_entities):
                     entity1 = self.entities[i]
@@ -454,28 +461,28 @@ class MultiGridEnv(gym.Env):
         bg = pygame.transform.smoothscale(bg, (self.screen_size, self.screen_size))
         line_surface = pygame.Surface((self.screen_size, self.screen_size), pygame.SRCALPHA)
 
-        # # Draw lines between agents without considering distance
-        # for i in range(len(self.agents)):
-        #     for j in range(i + 1, len(self.agents)):
-        #         agent1 = self.agents[i]
-        #         agent2 = self.agents[j]
-        #         pos1 = (((agent1.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
-        #                 ((agent1.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
-        #         pos2 = (((agent2.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
-        #                 ((agent2.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
-        #         pygame.draw.line(line_surface, (255, 0, 0), pos1, pos2, 2)
+        # Draw lines between agents without considering distance
+        for i in range(len(self.agents)):
+            for j in range(i + 1, len(self.agents)):
+                agent1 = self.agents[i]
+                agent2 = self.agents[j]
+                pos1 = (((agent1.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+                        ((agent1.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+                pos2 = (((agent2.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+                        ((agent2.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+                pygame.draw.line(line_surface, (255, 0, 0), pos1, pos2, 2)
 
-        # # Draw lines between agents and non-agent entities within the specified distance
-        # for agent in self.agents:
-        #     for entity in self.entities:
-        #         if entity not in self.agents:
-        #             dist = math.sqrt((agent.cur_pos[0] - entity.cur_pos[0])**2 + (agent.cur_pos[1] - entity.cur_pos[1])**2)
-        #             if dist <= self.max_edge_dist:
-        #                 pos1 = (((agent.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
-        #                         ((agent.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
-        #                 pos2 = (((entity.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
-        #                         ((entity.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
-        #                 pygame.draw.line(line_surface, (255, 0, 0), pos1, pos2, 2)
+        # Draw lines between agents and non-agent entities within the specified distance
+        for agent in self.agents:
+            for entity in self.entities:
+                if entity not in self.agents:
+                    dist = math.sqrt((agent.cur_pos[0] - entity.cur_pos[0])**2 + (agent.cur_pos[1] - entity.cur_pos[1])**2)
+                    if dist <= self.max_edge_dist:
+                        pos1 = (((agent.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+                                ((agent.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+                        pos2 = (((entity.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+                                ((entity.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+                        pygame.draw.line(line_surface, (255, 0, 0), pos1, pos2, 2)
 
         # Blit the line surface onto the background
         bg.blit(line_surface, (0, 0))

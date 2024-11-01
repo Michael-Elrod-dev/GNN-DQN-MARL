@@ -23,10 +23,10 @@ class Args:
 
         # Training parameters
         self.total_steps      = 2500000
-        self.episode_steps    = 150
+        self.episode_steps    = 300
         self.eps_start        = 1.0
         self.eps_end          = 0.01
-        self.eps_percentage   = 0.70
+        self.eps_percentage   = 0.80
         self.seed             = int(time.time())
 
         # Network Parameters
@@ -67,8 +67,8 @@ class Args:
 
         # Reward Parameters
         self.reward_goal = 5
-        self.penalty_goal = -1
-        self.penalty_obstacle = -5
+        self.penalty_goal = 0
+        self.penalty_obstacle = 0
         self.penalty_invalid_move = -5
 
         # Derived Parameters

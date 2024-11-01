@@ -64,56 +64,54 @@ def train(env, agents, network, logger, args):
     total_scores = deque(maxlen=100)
     steps_per_episode = deque(maxlen=100)
     seen_percentages = deque(maxlen=100)
-    agent_ids = torch.tensor([agent.id for agent in agents], device=args.device)
+    agent_id = [agent.id for agent in agents]
 
-    while step_count < args.total_steps:
+    while step_count < args.total_steps:  # Adjusted to your shorter training process
         episode_count += 1
         scores = [0 for _ in range(len(agents))]
-        
-        # Get initial observations in batched form
-        obs_batch, node_obs_batch, adj_batch = env.reset(args.render)
+        obs, node_obs, adj = env.reset(args.render)
 
         # Update network bias (PER)
         if step_count % 100 == 0:
-            network.update_beta(step_count, args.total_steps, args.prio_b)
+            network.update_beta(step_count, args.total_steps, args.prio_b)  # Adjusted total steps
 
         for step in range(args.episode_steps):
+            actions = []
             step_count += 1
 
-            # Get actions for all agents in one forward pass
-            actions = network.action(obs_batch, node_obs_batch, adj_batch, agent_ids, eps, args.debug)
+            # Get actions for each agent
+            for i in range(batch_size):
+                actions.append(network.action(obs[i].unsqueeze(0), node_obs[i].unsqueeze(0), adj[i].unsqueeze(0), agent_id[i], eps, args.debug))
 
-            # Step environment with batched actions
-            next_obs_batch, next_node_obs_batch, next_adj_batch, rewards, dones, info = env.step(actions, args.render)
+            # Act in the environment
+            next_obs, next_node_obs, next_adj, rewards, dones, info = env.step(actions, args.render)
 
             if args.debug:
                 for i in range(batch_size):
-                    print_info(agent_ids[i], obs_batch[i], node_obs_batch[i], adj_batch[i], 
-                             actions[i], rewards[i], next_obs_batch[i], next_node_obs_batch[i], 
-                             next_adj_batch[i], dones[i])
+                    print_info(agent_id[i], obs[i], node_obs[i], adj[i], actions[i], rewards[i], next_obs[i], next_node_obs[i], next_adj[i], dones[i])
 
-            # Process all experiences in one batch
-            loss = network.step(agent_ids, obs_batch, node_obs_batch, adj_batch, 
-                                    actions, rewards, next_obs_batch, next_node_obs_batch, 
-                                    next_adj_batch, dones)
-            
-            if loss is not None and step_count > 10000:
-                dqn_losses.append(loss.cpu().item())
-            
-            # Update scores
+            # Send experience to network
             for i in range(batch_size):
+                loss = network.step(agent_id[i], obs[i], node_obs[i], adj[i], actions[i], rewards[i], next_obs[i], next_node_obs[i], next_adj[i], dones[i])
+                if loss is not None:
+                    dqn_losses.append(loss.cpu().item())
                 scores[i] += rewards[i]
 
-            # Update observations
-            obs_batch = next_obs_batch
-            node_obs_batch = next_node_obs_batch
-            adj_batch = next_adj_batch
+            obs = next_obs
+            node_obs = next_node_obs
+            adj = next_adj
 
             # Update epsilon
             if eps > args.eps_end:
                 eps -= args.eps_decay
             else:
                 eps = args.eps_end
+
+            # Print GPU usage every 100 steps
+            if step_count % 100 == 0:
+                print(f"\nStep {step_count}:")
+                print(f"GPU memory allocated: {torch.cuda.memory_allocated() / 1e9:.2f} GB")
+                print(f"GPU memory reserved: {torch.cuda.memory_reserved() / 1e9:.2f} GB")
 
             if any(dones):
                 seen_percentages.append(info["seen_percentage"])
@@ -136,7 +134,6 @@ def train(env, agents, network, logger, args):
             )
             logger.log_agent_metrics(episode_count, scores)
 
-        # Progress tracking and model saving
         current_progress = round((step_count / args.total_steps) * 100)
         print(f'\r{current_progress}% | Eps: {eps:.2f} \tAvg Score: {np.mean(total_scores):.2f} \tAvg Seen: {np.mean(seen_percentages):.2f}%', end="")
         if current_progress != progress:

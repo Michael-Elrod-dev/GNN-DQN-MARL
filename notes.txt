@@ -2,10 +2,14 @@
 
 ssh mselrod@slogin.palmetto.clemson.edu
 
+scp -r directory mselrod@slogin.palmetto.clemson.edu:/home/mselrod
+
+salloc --time=04:00:00 --cpus-per-task=1 --mem=100GB --gpus=v100:1
+
 pip install pygame wandb gymnasium==0.29.1 torch-geometric==2.5.3
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
-salloc --time=02:00:00 --cpus-per-task=4 --mem=16GB --gpus=v100:1
+
 
 api key: cc0496ce907e3e260cdea0f04bef954e02bb5945
 
