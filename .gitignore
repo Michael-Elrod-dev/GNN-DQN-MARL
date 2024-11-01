@@ -5,3 +5,6 @@ wandb/
 script.sh.log-*
 Agents-4/
 Agents-10/
+notes.txt
+agent_ratio.txt
+cluster_info.txt
