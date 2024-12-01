@@ -11,7 +11,6 @@ dependencies:
   - setuptools=69.5.1=py311haa95532_0
   - sqlite=3.45.3=h2bbff1b_0
   - tk=8.6.14=h0416ee5_0
-  - tzdata=2024a=h04d1e81_0
   - vc=14.2=h2eaa2aa_1
   - vs2015_runtime=14.29.30133=h43f2093_3
   - wheel=0.43.0=py311haa95532_0
@@ -33,6 +32,7 @@ dependencies:
       - git-filter-repo==2.45.0
       - gitdb==4.0.11
       - gitpython==3.1.43
+      - gputil==1.4.0
       - gymnasium==0.29.1
       - idna==3.7
       - intel-openmp==2021.4.0
@@ -44,12 +44,16 @@ dependencies:
       - multidict==6.0.5
       - networkx==3.2.1
       - numpy==1.26.3
+      - opencv-python==4.10.0.84
+      - pandas==2.2.3
       - pillow==10.2.0
       - platformdirs==4.3.6
       - protobuf==5.28.2
       - psutil==6.0.0
       - pygame==2.5.2
       - pyparsing==3.1.2
+      - python-dateutil==2.9.0.post0
+      - pytz==2024.2
       - pyyaml==6.0.2
       - requests==2.32.3
       - scikit-learn==1.5.0
@@ -66,6 +70,7 @@ dependencies:
       - torchvision==0.18.1+cu121
       - tqdm==4.66.4
       - typing-extensions==4.9.0
+      - tzdata==2024.2
       - urllib3==2.2.2
       - wandb==0.18.1
       - yarl==1.9.4
