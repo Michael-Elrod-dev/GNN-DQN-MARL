@@ -159,7 +159,6 @@ class ReplayBuffer:
             self.prio_b = args.prio_b
     
     def add(self, id, obs, node_obs, adj, action, reward, next_obs, next_node_obs, next_adj, dones):
-        # We need to separate the agent experiences here
         for i in range(len(id)):
             e = self.experience(
                 id[i],

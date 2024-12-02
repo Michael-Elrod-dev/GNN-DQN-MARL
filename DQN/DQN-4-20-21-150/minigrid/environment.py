@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import time
 import math
-import copy
 import torch
 import pygame
 import numpy as np
@@ -11,14 +10,14 @@ import gymnasium as gym
 from abc import abstractmethod
 from minigrid.grid import Grid
 from typing import Iterable, TypeVar
-from minigrid.world import Goal, Agent, Obstacle
+from minigrid.world import Goal, Obstacle
 from utils import Actions, COLOR_NAMES, TILE_PIXELS
-
 
 T = TypeVar("T")
 
 class MultiGridEnv(gym.Env):
     def __init__(self, args, agents):
+        self.device = args.device
         self.clock = None
         self.window = None
         self.agents = agents
@@ -42,9 +41,7 @@ class MultiGridEnv(gym.Env):
         self.max_steps = args.episode_steps
         self.num_obstacles = args.num_obstacles
         self.max_edge_dist = args.max_edge_dist
-        # self.full_features = args.full_features
         self.grid = Grid(self.width, self.height)
-        self.agent_view_size = args.agent_view_size
         
         # Rendering attributes
         self.highlight = True
@@ -69,7 +66,6 @@ class MultiGridEnv(gym.Env):
         # To keep the same grid for each episode, call env.seed() with
         # the same seed before calling env.reset()
         super().reset(seed=int(time.time()))
-        obs = []
         self.goals = []
         self.entities = []
         self.obstacles = []
@@ -77,7 +73,6 @@ class MultiGridEnv(gym.Env):
         self.dummy_goal.cur_pos = (0, 0)
         self.dummy_goal.collected = False
         self.seen_cells.fill(False)
-        
         self.step_count = 0
         self.num_collected = 0
 
@@ -87,13 +82,13 @@ class MultiGridEnv(gym.Env):
         self._gen_grid(self.width, self.height)
         self.calc_distances(True)
 
-        for agent in self.agents:
-            obs.append(self._get_obs(agent))
+        # Instead of building lists, create batched tensors directly
+        batch_obs = torch.stack([self._get_obs(agent) for agent in self.agents]).to(self.device)
 
         if render: 
             self.render()
         
-        return obs
+        return batch_obs
 
     @abstractmethod
     def _gen_grid(self, width, height):
@@ -149,7 +144,7 @@ class MultiGridEnv(gym.Env):
     def _place_agent(self, agent, x, y):
         agent.init_pos = (x, y)
         agent.cur_pos = (x, y)
-        agent.direction = 3  # Assuming 3 is the default direction
+        agent.direction = 3
         self.grid.set_agent(x, y, agent)
         self.entities.append(agent)
 
@@ -189,14 +184,13 @@ class MultiGridEnv(gym.Env):
   
     def _get_obs(self, agent):
         obs = []
-        agent_pos = agent.cur_pos
-        obs.extend(agent_pos)
+        obs.extend(agent.cur_pos)
 
         agent_id = agent.id
         num_agents = len(self.agents)
         num_goals = len(self.goals)
 
-        # Find goals within the agent's FOV and store their relative distances
+        # Find goals within the agent's FOV and store their distances
         goals_in_fov = []
         for goal_id in range(num_goals):
             goal = self.goals[goal_id]
@@ -204,16 +198,19 @@ class MultiGridEnv(gym.Env):
             collected = self.goals[goal_id].collected
 
             if dist <= self.max_edge_dist and not collected:
-                rel_pos = (goal.cur_pos[0] - agent_pos[0], goal.cur_pos[1] - agent_pos[1])
-                goals_in_fov.append((goal, dist, rel_pos))
+                goals_in_fov.append((goal, dist))
 
         # Sort goals by distance in ascending order
         goals_in_fov.sort(key=lambda x: x[1])
         goals_in_fov = goals_in_fov[:3]
         
         # Fill the remaining positions with dummy goals if necessary
-        while len(goals_in_fov) < 3:
-            goals_in_fov.append((self.dummy_goal, float('inf'), (0, 0)))
+        if len(goals_in_fov) == 0:
+            goals_in_fov = [(self.dummy_goal, float('inf'))] * 3
+        elif len(goals_in_fov) == 1:
+            goals_in_fov.extend([(self.dummy_goal, float('inf'))] * 2)
+        elif len(goals_in_fov) == 2:
+            goals_in_fov.append((self.dummy_goal, float('inf')))
 
         # Check if any of the agent's goals have been collected
         if agent.goal1 is not None and agent.goal1.collected:
@@ -225,47 +222,45 @@ class MultiGridEnv(gym.Env):
 
         # Scenario 1: Start of a new episode (all agent.goal locations are None)
         if agent.goal1 is None and agent.goal2 is None and agent.goal3 is None:
-            for i, (goal, _, rel_pos) in enumerate(goals_in_fov):
-                setattr(agent, f'goal{i+1}', goal)
-                obs.extend(rel_pos)
+            if len(goals_in_fov) > 0:
+                agent.goal1 = goals_in_fov[0][0]
+            if len(goals_in_fov) > 1:
+                agent.goal2 = goals_in_fov[1][0]
+            if len(goals_in_fov) > 2:
+                agent.goal3 = goals_in_fov[2][0]
 
         # Scenario 2: Step within an epoch (update goal locations based on distances)
         elif agent.goal1 is not None and agent.goal2 is not None and agent.goal3 is not None:
-            current_goals = [agent.goal1, agent.goal2, agent.goal3]
-            for goal, dist, rel_pos in goals_in_fov:
-                if goal not in current_goals:
-                    if agent.goal1 == self.dummy_goal or dist < self.distance_matrix[agent_id, num_agents + self.goals.index(agent.goal1)]:
-                        agent.goal3 = agent.goal2
-                        agent.goal2 = agent.goal1
-                        agent.goal1 = goal
-                    elif agent.goal2 == self.dummy_goal or dist < self.distance_matrix[agent_id, num_agents + self.goals.index(agent.goal2)]:
-                        agent.goal3 = agent.goal2
-                        agent.goal2 = goal
-                    elif agent.goal3 == self.dummy_goal or dist < self.distance_matrix[agent_id, num_agents + self.goals.index(agent.goal3)]:
-                        agent.goal3 = goal
-
-            # Add relative positions of the updated goals to the observation
-            for goal in [agent.goal1, agent.goal2, agent.goal3]:
-                if goal == self.dummy_goal:
-                    obs.extend([0, 0])
-                else:
-                    rel_pos = (goal.cur_pos[0] - agent_pos[0], goal.cur_pos[1] - agent_pos[1])
-                    obs.extend(rel_pos)
-
+            for goal, dist in goals_in_fov:
+                if goal == agent.goal1 or goal == agent.goal2 or goal == agent.goal3:
+                    continue
+                if agent.goal1 == self.dummy_goal or dist < self.distance_matrix[agent_id, num_agents + self.goals.index(agent.goal1)]:
+                    agent.goal3 = agent.goal2
+                    agent.goal2 = agent.goal1
+                    agent.goal1 = goal
+                elif agent.goal2 == self.dummy_goal or dist < self.distance_matrix[agent_id, num_agents + self.goals.index(agent.goal2)]:
+                    agent.goal3 = agent.goal2
+                    agent.goal2 = goal
+                elif agent.goal3 == self.dummy_goal or dist < self.distance_matrix[agent_id, num_agents + self.goals.index(agent.goal3)]:
+                    agent.goal3 = goal
         else:
             # Fill remaining goal variables with dummy goal objects
-            for i in range(1, 4):
-                if getattr(agent, f'goal{i}') is None:
-                    setattr(agent, f'goal{i}', self.dummy_goal)
-                
-                if getattr(agent, f'goal{i}') == self.dummy_goal:
-                    obs.extend([0, 0])
-                else:
-                    goal = getattr(agent, f'goal{i}')
-                    rel_pos = (goal.cur_pos[0] - agent_pos[0], goal.cur_pos[1] - agent_pos[1])
-                    obs.extend(rel_pos)
+            if agent.goal1 is None:
+                agent.goal1 = self.dummy_goal
+            if agent.goal2 is None:
+                agent.goal2 = self.dummy_goal
+            if agent.goal3 is None:
+                agent.goal3 = self.dummy_goal
 
-        agent.obs = torch.tensor(obs)
+        # Add goal information to the observation vector
+        obs.extend(agent.goal1.cur_pos)
+        # obs.append(int(agent.goal1.collected))
+        obs.extend(agent.goal2.cur_pos)
+        # obs.append(int(agent.goal2.collected))
+        obs.extend(agent.goal3.cur_pos)
+        # obs.append(int(agent.goal3.collected))
+
+        agent.obs = torch.tensor(obs, device=self.device)
         return agent.obs
 
     def _update_seen_cells(self):
@@ -301,10 +296,10 @@ class MultiGridEnv(gym.Env):
         return reward
 
     def step(self, actions, render):
-        obs = []
-        dones = [False] * len(self.agents)
         self.step_count += 1
-        rewards = np.zeros(len(self.agents))
+        dones = torch.zeros(len(self.agents), dtype=torch.bool, device=self.device)
+        rewards = torch.zeros(len(self.agents), device=self.device)
+        actions = actions if torch.is_tensor(actions) else torch.tensor(actions, device=self.device)
 
         for i, action in enumerate(actions):
             agent_pos = self.agents[i].cur_pos
@@ -322,34 +317,29 @@ class MultiGridEnv(gym.Env):
             elif action == self.actions.right:
                 new_pos = (agent_pos[0] + 1, agent_pos[1])
 
-            # Check if the new position is valid (not a wall and within bounds)
+            # Check if the new position is valid
             cell = self.grid.get(*new_pos)
             agent = self.grid.get_agent(*new_pos)
 
-            # If move is valid and space is empty
+            # Handle movement and rewards
             if cell is None and agent is None and 0 <= new_pos[0] < self.width and 0 <= new_pos[1] < self.height:
                 self.grid.set_agent(*new_pos, self.agents[i])
                 self.grid.set_agent(*self.agents[i].cur_pos, None)
                 self.agents[i].cur_pos = new_pos
-
-            # If move is valid but involves an overlap
             elif cell and cell.can_overlap():
                 rewards[i] = self._handle_overlap(i, new_pos, cell)
-
-            # If move is not valid
             else:
                 rewards[i] = self._reward(self.penalty_invalid_move)
 
-            if self.step_count >= self.max_steps or self.num_collected >= self.num_goals:
-                dones[i] = True
+        # Check if episode is done
+        if self.step_count >= self.max_steps or self.num_collected >= self.num_goals:
+            dones.fill_(True)
 
         self.calc_distances(False)
-        dones = [True if any(dones) else d for d in dones]
-
         self._update_seen_cells()
         seen_percentage = self._calculate_seen_percentage()
 
-        if any(dones):
+        if dones.any():
             info = {
                 "goals_collected": self.num_collected,
                 "goals_percentage": (self.num_collected / self.num_goals) * 100,
@@ -358,13 +348,13 @@ class MultiGridEnv(gym.Env):
         else:
             info = {}
     
-        for agent in self.agents:
-            obs.append(self._get_obs(agent))
+        # Get next observations
+        batch_obs = torch.stack([self._get_obs(agent) for agent in self.agents]).to(self.device)
 
         if render:
             self.render()
         
-        return obs, rewards, dones, info
+        return batch_obs, rewards, dones, info
     
     def calc_distances(self, reset=False):
         num_entities = len(self.entities)

@@ -4,7 +4,7 @@ import socket
 class Logger:
     def __init__(self, args):
         wandb.init(
-            project='GNN-Test', 
+            project='GNN-DQN', 
             entity='elrod-michael95', 
             name=f'{args.title}', 
             mode="online",

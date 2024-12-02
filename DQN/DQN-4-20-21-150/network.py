@@ -41,9 +41,16 @@ class Network():
     def step(self, obs, action, reward, next_obs, done):
         loss = None
         self.t_step += 1
-        # Add experience to replay buffer
-        self.memory.add(obs.float(), torch.tensor(action), torch.tensor(reward), next_obs.float(), torch.tensor(done))
-        
+
+        # Add experience to replay buffer - using proper tensor cloning
+        self.memory.add(
+            obs.float().clone().detach(),
+            action.clone().detach(),
+            reward.clone().detach(),
+            next_obs.float().clone().detach(),
+            done.clone().detach()
+        )
+
         # Update the network
         if self.time_step % self.update_step == 0:
             if len(self.memory) > self.batch_size:
@@ -51,70 +58,75 @@ class Network():
                 loss = self.learn(experiences, experience_indexes, priorities, self.gamma)
         return loss
    
-    def action(self, obs, eps, testing):
+    def action(self, obs, eps, debug):
         obs = obs.float().to(self.device)
         self.qnetwork_local.eval()
         with torch.no_grad():
             action_values = self.qnetwork_local(obs)
         self.qnetwork_local.train()
 
-        if random.random() > eps:
-            action = np.argmax(action_values.cpu().data.numpy())
-        else:
-            if testing:
-                while True:
-                    user_input = input("Enter an action (W,A,S,D): ")
-                    if user_input == 'a':
-                        action = 0  # Left
-                        break
-                    elif user_input == 'd':
-                        action = 1  # Right
-                        break
-                    elif user_input == 'w':
-                        action = 2  # Up
-                        break
-                    elif user_input == 's':
-                        action = 3  # Down
-                        break
-                    else:
-                        print("Invalid input. Please enter (W,A,S,D)")
+        # Handle epsilon-greedy for the whole batch
+        actions = []
+        for i in range(len(obs)):
+            if random.random() > eps:
+                action = action_values[i].argmax().item()
             else:
-                action = random.choice(range(self.action_size))
-        return action
+                if debug:
+                    # Keep debug input handling for single agent
+                    while True:
+                        user_input = input(f"Enter an action (W,A,S,D): ")
+                        if user_input == 'a':
+                            action = 0  # Left
+                            break
+                        elif user_input == 'd':
+                            action = 1  # Right
+                            break
+                        elif user_input == 'w':
+                            action = 2  # Up
+                            break
+                        elif user_input == 's':
+                            action = 3  # Down
+                            break
+                        else:
+                            print("Invalid input. Please enter (W,A,S,D)")
+                else:
+                    action = random.randint(0, self.action_size - 1)
+            actions.append(action)
+        
+        return torch.tensor(actions, device=self.device)
 
     def learn(self, experiences, experience_indexes, priorities, gamma):
         obs, actions, rewards, next_obs, done = experiences
         
-        # Calculate current Q(s,a)
+        # Calculate current Q(s,a) - needs gradients for training
         Q_s = self.qnetwork_local(obs)
         Q_s_a = Q_s.gather(1, actions.unsqueeze(1)).squeeze(1)
 
-        # Get max predicted Q values (for next obs) from target model
-        Q_s_next = self.qnetwork_target(next_obs).max(1)[0].unsqueeze(1)
-        targets = rewards + gamma * Q_s_next * (1 - done.float())
+        # Target calculation - don't need gradients
+        with torch.no_grad():
+            next_Q = self.qnetwork_target(next_obs)
+            Q_s_next = next_Q.max(1)[0]
+            targets = rewards + gamma * Q_s_next * (1 - done.float())
         
-        # Calculate loss between local and target network
+        # Loss calculation
         losses = (Q_s_a - targets)**2
-        
-        # Importance-sampling weights (Prioritized Experience Replay)
         importance_weights = (((1/self.buffer_size)*(1/priorities))**self.prio_b).unsqueeze(1)
-        
-        loss = (importance_weights*losses).mean()
-        dqn_loss = loss
+        loss = (importance_weights * losses).mean()
 
-        # Calculate gradients and do a step
+        # Optimization step
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
         
-        # Calculate priorities and update them
-        target_priorities = abs(Q_s_a - targets).detach().cpu().numpy() + self.prio_e
-        self.memory.update_priority(experience_indexes, target_priorities)
+        # Priority updates - don't need gradients
+        with torch.no_grad():
+            td_errors = abs(Q_s_a - targets)
+            new_priorities = td_errors + self.prio_e
+            self.memory.update_priority(experience_indexes, new_priorities)
 
-        # Update target network
         self.soft_update(self.qnetwork_local, self.qnetwork_target, self.tau)
-
-        return dqn_loss                 
+        
+        return loss
 
     def soft_update(self, local_model, target_model, tau):
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
@@ -140,13 +152,20 @@ class ReplayBuffer:
             self.prio_b = args.prio_b
     
     def add(self, obs, action, reward, next_obs, dones):
-        e = self.experience(obs, action, reward, next_obs, dones)
-        self.memory.append(e)
-        self.priority.append(self.prio_e)
+        for i in range(len(action)):
+            e = self.experience(
+                obs[i],
+                action[i],
+                reward[i],
+                next_obs[i],
+                dones[i]
+            )
+            self.memory.append(e)
+            self.priority.append(self.prio_e)
         
     def update_priority(self, priority_indexes, priority_targets):
-        for index,priority_index in enumerate(priority_indexes):
-            self.priority[priority_index] = priority_targets[index][0]
+        for index, priority_index in enumerate(priority_indexes):
+            self.priority[priority_index] = priority_targets[index].item()
     
     def sample(self):
         adjusted_priority = torch.tensor(self.priority, dtype=torch.float32, device=self.device) ** self.prio_a
@@ -154,13 +173,13 @@ class ReplayBuffer:
         experience_indexes = torch.multinomial(sampling_probability, self.batch_size, replacement=False)
         experiences = [self.memory[index] for index in experience_indexes]
 
-        obs = torch.stack([e.obs for e in experiences]).to(self.device)
-        action = torch.stack([e.action for e in experiences]).to(self.device)
-        reward = torch.stack([e.reward for e in experiences]).to(self.device)
-        next_obs = torch.stack([e.next_obs for e in experiences]).to(self.device)
-        done = torch.stack([e.done for e in experiences]).to(self.device)
+        obs = torch.stack([e.obs for e in experiences if e is not None]).to(self.device)
+        action = torch.stack([e.action for e in experiences if e is not None]).to(self.device)
+        reward = torch.stack([e.reward for e in experiences if e is not None]).to(self.device)
+        next_obs = torch.stack([e.next_obs for e in experiences if e is not None]).to(self.device)
+        done = torch.stack([e.done for e in experiences if e is not None]).to(self.device)
         priorities = torch.tensor([self.priority[index] for index in experience_indexes], dtype=torch.float32, device=self.device)
-
+        
         return (obs, action, reward, next_obs, done), experience_indexes, priorities
 
     def __len__(self):

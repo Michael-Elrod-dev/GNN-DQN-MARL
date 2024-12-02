@@ -13,7 +13,6 @@ from typing import Iterable, TypeVar
 from minigrid.world import Goal, Obstacle
 from utils import Actions, COLOR_NAMES, TILE_PIXELS
 
-
 T = TypeVar("T")
 
 class MultiGridEnv(gym.Env):
@@ -29,7 +28,6 @@ class MultiGridEnv(gym.Env):
         self.screen_size = 640
         self.render_size = None
         self.gamma = args.gamma
-        self.agent_view_size = args.agent_view_size
 
         # Environment configuration
         self.entities = []
@@ -76,7 +74,6 @@ class MultiGridEnv(gym.Env):
         self.dummy_goal.cur_pos = (0, 0)
         self.dummy_goal.collected = False
         self.seen_cells.fill(False)
-        
         self.step_count = 0
         self.num_collected = 0
 

@@ -68,9 +68,9 @@ def train(env, agents, network, logger, args):
         # Get initial observations in batched form
         obs_batch, node_obs_batch, adj_batch = env.reset(args.render)
 
-    # Update network bias (PER)
-    if step_count % 100 == 0:
-        network.update_beta(step_count, args.total_steps, args.prio_b)
+        # Update network bias (PER)
+        if step_count % 100 == 0:
+            network.update_beta(step_count, args.total_steps, args.prio_b)
 
         for step in range(args.episode_steps):
             step_count += 1
