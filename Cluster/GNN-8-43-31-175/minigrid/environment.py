@@ -80,6 +80,9 @@ class MultiGridEnv(gym.Env):
         for agent in self.agents:
             agent.reset()
 
+        if hasattr(self, 'cluster_centers'):
+            delattr(self, 'cluster_centers')
+
         self._gen_grid(self.width, self.height)
         self.calc_distances(True)
 
@@ -151,7 +154,54 @@ class MultiGridEnv(gym.Env):
         self.grid.set_agent(x, y, agent)
         self.entities.append(agent)
 
+    def _get_cluster_centers(self):
+        # Lazy initialization of cluster centers - only created when first needed
+        if not hasattr(self, 'cluster_centers'):
+            num_clusters = min(3, self.num_goals)
+            self.cluster_centers = []
+            while len(self.cluster_centers) < num_clusters:
+                x, y = self._rand_pos(1, self.width - 2, 1, self.height - 2)
+                if not self.grid.get(x, y) and all(abs(x - cx) + abs(y - cy) > 3 for cx, cy in self.cluster_centers):
+                    self.cluster_centers.append((x, y))
+        return self.cluster_centers
+
     def _place_object(self, obj):
+        if isinstance(obj, Goal):
+            # Randomly decide if this goal should be clustered (50-50 chance)
+            if self._rand_bool():
+                # Get or create cluster centers
+                centers = self._get_cluster_centers()
+                
+                # Choose a random cluster center
+                center_x, center_y = self._rand_elem(centers)
+                
+                # Try to place near the chosen center with gaussian distribution
+                max_attempts = 50
+                sigma = 2.0  # Controls how spread out the cluster is
+                
+                for _ in range(max_attempts):
+                    dx = int(round(self.np_random.normal(0, sigma)))
+                    dy = int(round(self.np_random.normal(0, sigma)))
+                    
+                    x = min(max(1, center_x + dx), self.width - 2)
+                    y = min(max(1, center_y + dy), self.height - 2)
+                    
+                    if not self.grid.get(x, y):
+                        self.grid.set(x, y, obj)
+                        obj.cur_pos = (x, y)
+                        self.goals.append(obj)
+                        return
+                
+                # If no spot found after max attempts, fall back to random placement
+                self._place_random_position(obj)
+            else:
+                # Place randomly
+                self._place_random_position(obj)
+        else:
+            # For non-goal objects, use random placement
+            self._place_random_position(obj)
+
+    def _place_random_position(self, obj):
         while True:
             x, y = self._rand_pos(1, self.width - 2, 1, self.height - 2)
             if not self.grid.get(x, y):
@@ -436,7 +486,7 @@ class MultiGridEnv(gym.Env):
             self.clock = pygame.time.Clock()
         surf = pygame.surfarray.make_surface(img)
 
-        # Create background 
+        # Create background
         offset = surf.get_size()[0] * 0.1
         bg = pygame.Surface((int(surf.get_size()[0] + offset), int(surf.get_size()[1] + offset)))
         bg.convert()
@@ -445,37 +495,28 @@ class MultiGridEnv(gym.Env):
         bg = pygame.transform.smoothscale(bg, (self.screen_size, self.screen_size))
         line_surface = pygame.Surface((self.screen_size, self.screen_size), pygame.SRCALPHA)
 
-        # Draw range circles around agents
-        for agent in self.agents:
-            pos = (((agent.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
-                    ((agent.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
-            
-            # Calculate radius in screen coordinates
-            radius = self.max_edge_dist * self.tile_size * (self.screen_size / (surf.get_size()[0] + offset))
-            pygame.draw.circle(line_surface, (255, 0, 0, 128), pos, radius, 2)  # Last parameter 1 means outline only
+        # # Draw lines between agents without considering distance
+        # for i in range(len(self.agents)):
+        #     for j in range(i + 1, len(self.agents)):
+        #         agent1 = self.agents[i]
+        #         agent2 = self.agents[j]
+        #         pos1 = (((agent1.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+        #                 ((agent1.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+        #         pos2 = (((agent2.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+        #                 ((agent2.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+        #         pygame.draw.line(line_surface, (255, 0, 0), pos1, pos2, 2)
 
-        # Draw lines between agents and their 3 closest neighbors
-        for i, agent1 in enumerate(self.agents):
-            # Calculate distances to all other agents
-            distances = []
-            for j, agent2 in enumerate(self.agents):
-                if i != j:
-                    dist = math.sqrt((agent1.cur_pos[0] - agent2.cur_pos[0])**2 + 
-                                (agent1.cur_pos[1] - agent2.cur_pos[1])**2)
-                    distances.append((dist, j))
-            
-            # Sort by distance and get 3 closest
-            distances.sort()
-            closest_three = distances[:2]
-            
-            # Draw lines to 3 closest agents
-            for _, j in closest_three:
-                agent2 = self.agents[j]
-                pos1 = (((agent1.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
-                        ((agent1.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
-                pos2 = (((agent2.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
-                        ((agent2.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
-                pygame.draw.line(line_surface, (255, 0, 0), pos1, pos2, 2)
+        # # Draw lines between agents and non-agent entities within the specified distance
+        # for agent in self.agents:
+        #     for entity in self.entities:
+        #         if entity not in self.agents:
+        #             dist = math.sqrt((agent.cur_pos[0] - entity.cur_pos[0])**2 + (agent.cur_pos[1] - entity.cur_pos[1])**2)
+        #             if dist <= self.max_edge_dist:
+        #                 pos1 = (((agent.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+        #                         ((agent.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+        #                 pos2 = (((entity.cur_pos[0] + 1) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[0] + offset)), 
+        #                         ((entity.cur_pos[1]) * self.tile_size + self.tile_size // 2) * (self.screen_size / (surf.get_size()[1] + offset)))
+        #                 pygame.draw.line(line_surface, (255, 0, 0), pos1, pos2, 2)
 
         # Blit the line surface onto the background
         bg.blit(line_surface, (0, 0))
@@ -494,7 +535,7 @@ class MultiGridEnv(gym.Env):
                     if dist <= self.max_edge_dist:
                         highlight_masks[i, j] = True
         
-        img = self.grid.render(tile_size,highlight_mask=None)
+        img = self.grid.render(tile_size,highlight_mask=highlight_masks if highlight else None)
         return img
 
     def _reward(self, reward):

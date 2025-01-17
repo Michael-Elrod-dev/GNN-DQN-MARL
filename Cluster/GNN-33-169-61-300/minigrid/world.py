@@ -46,10 +46,10 @@ class WorldObj:
 
 class Agent(WorldObj):
     def __init__(self, id, args):
-        super(Agent, self).__init__('agent', "red")
+        super(Agent, self).__init__('agent', "purple")
         self.id = id
         self.direction = 3
-        self.color = "red"
+        self.color = "purple"
         self.num_collected = 0
         self.num_goals = args.num_goals
         self.num_agents = args.num_agents
@@ -62,7 +62,7 @@ class Agent(WorldObj):
         
     def render(self, img):
         c = COLORS[self.color]
-        fill_coords(img, point_in_rect(0.19, 0.81, 0.19, 0.81), c)
+        fill_coords(img, point_in_circle(0.5, 0.5, 0.31), c)
 
     def encode(self):
         return (OBJECT_TO_IDX[self.type], COLOR_TO_IDX[self.color], self.direction, 0, 0, 0)
